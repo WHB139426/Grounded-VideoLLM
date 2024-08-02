@@ -146,7 +146,13 @@ class LLAVA_NEXT_VIDEO(nn.Module):
             print("Frozen video_encoder")
             for name, param in self.video_encoder.named_parameters():
                 param.requires_grad = False
+
             self.reset_embeddings()
+
+            if self.lora:
+                print("LORA llm")
+                self.lora_model()
+
             self.trainable_module_keys = ["multi_modal_projector", "video_projecter", "language_model"]  
         
     def lora_model(self,):
@@ -208,6 +214,8 @@ class LLAVA_NEXT_VIDEO(nn.Module):
         if self.stage == 'grounded':
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy_embedding()
         elif self.stage=='pretrain':
+            llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
+        else:
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
 
         # Get Prismatic Wrapping Policy =>> just a module wrapping policy around `self.projector`
@@ -345,6 +353,7 @@ class LLAVA_NEXT_VIDEO(nn.Module):
         if batch_input_ids.shape[1] > self.max_txt_len:
             batch_input_ids = batch_input_ids[:, :self.max_txt_len]
             batch_labels = batch_labels[:, :self.max_txt_len]
+            batch_labels[:, -1] = self.tokenizer.eos_token_id
             batch_attention_mask = batch_attention_mask[:, :self.max_txt_len]
 
         # for labels in batch_labels:

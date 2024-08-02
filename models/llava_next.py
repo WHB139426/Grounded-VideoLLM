@@ -241,6 +241,7 @@ class LLAVA_NEXT(nn.Module):
         if batch_input_ids.shape[1] > self.max_txt_len:
             batch_input_ids = batch_input_ids[:, :self.max_txt_len]
             batch_labels = batch_labels[:, :self.max_txt_len]
+            batch_labels[:, -1] = self.tokenizer.eos_token_id
             batch_attention_mask = batch_attention_mask[:, :self.max_txt_len]
 
         # for labels in batch_labels:
