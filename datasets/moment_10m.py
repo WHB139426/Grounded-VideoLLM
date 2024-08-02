@@ -174,7 +174,7 @@ class Moment10M_GESM(Dataset):
             }
 
 
-# dataset = Moment10M_GESM()
+dataset = Moment10M_GESM()
 # for i in range(10):
 #     entry = random.choice(dataset)
 #     print(entry['question_ids'], entry['video_ids'])
