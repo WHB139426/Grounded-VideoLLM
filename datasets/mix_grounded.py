@@ -107,6 +107,7 @@ class MixGrounded(Dataset):
         res = []
         for cap, ts in zip(captions, timestamps):
             cap = cap.strip()
+            cap = cap[0].lower() + cap[1:]
             text = f'From <{ts[0]}> to <{ts[1]}>, {cap}'
             res.append(text)
         res = '\n'.join(res)

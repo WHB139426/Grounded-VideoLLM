@@ -119,7 +119,6 @@ class Charades_STA(Dataset):
         new_answer = re.sub(pattern, replace_float, answer)
         return new_answer
 
-
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
         video_id = str(self.video_ids[index])

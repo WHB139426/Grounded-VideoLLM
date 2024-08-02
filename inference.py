@@ -19,11 +19,11 @@ def parse_args():
     # evaluation
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--eval_bs', type=int, default=1)
-    parser.add_argument('--device', type=str, default='cuda:1')
+    parser.add_argument('--device', type=str, default='cuda:3')
     parser.add_argument('--dtype', type=torch.dtype, default=torch.float16, choices=[torch.bfloat16, torch.float32])
 
     # model && dataset
-    parser.add_argument('--dataset', type=str, default='charades_sta', choices=['msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights'])
+    parser.add_argument('--dataset', type=str, default='anet_grounding', choices=['msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights', 'anet_grounding'])
     parser.add_argument('--model', type=str, default='llava_next_video', choices=['llava_next_video'])
     parser.add_argument('--llm', type=str, default='llama3', choices=['llama3', 'vicuna'])
     parser.add_argument('--stage', type=str, default="grounded", choices=['pretrain', 'grounded', 'sft'])
@@ -124,8 +124,19 @@ if __name__ == '__main__':
             llm=args.llm,
         )
     elif args.dataset == 'anet_caption':
-        from datasets.anet_caption import ANet_Caption
+        from datasets.activitynet import ANet_Caption
         val_dataset = ANet_Caption(
+            anno_path = "/home/haibo/data/activitynet/captions/val_1.json",
+            video_path = '/home/haibo/data/activitynet/videos',
+            num_frames = args.num_frames,
+            num_segs = args.num_segs,
+            num_temporal_tokens = args.num_temporal_tokens,
+            sample='middle',
+            llm=args.llm,
+        )
+    elif args.dataset == 'anet_grounding':
+        from datasets.activitynet import ANet_Grounding
+        val_dataset = ANet_Grounding(
             anno_path = "/home/haibo/data/activitynet/captions/val_1.json",
             video_path = '/home/haibo/data/activitynet/videos',
             num_frames = args.num_frames,
