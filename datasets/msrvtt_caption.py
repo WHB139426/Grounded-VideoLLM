@@ -17,14 +17,15 @@ from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-class ANet_Caption(Dataset):
+
+class MSRVTT_Caption(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/activitynet/captions/val_1.json",
-        video_path = '/home/haibo/data/activitynet/videos',
-        num_frames = 96,
-        num_segs = 12,
-        num_temporal_tokens = 300,
+        video_path = "/home/haibo/data/msrvttqa/videos",
+        anno_path = '/home/haibo/data/msrvttqa/test_videodatainfo.json',
+        num_frames = 128,
+        num_segs = 16,
+        num_temporal_tokens = 500,
         sample='rand',
         llm='llama3',
     ):
@@ -34,75 +35,47 @@ class ANet_Caption(Dataset):
         self.num_temporal_tokens = num_temporal_tokens
         self.sample = sample
 
-        self.data = load_json(anno_path)
+        self.data = load_json(anno_path)['sentences']
         if llm == 'llama3':
             self.chat_template = LLaMA3_Template()
         elif llm == 'vicuna':
             self.chat_template = Vicuna_Template()
-
+            
         self.video_processor = frame_transform(image_size=224, mean=INTERNVIDEO_MEAN, std=INTERNVIDEO_STD)
         self.image_processor = frame_transform(image_size=336, mean=OPENAI_DATASET_MEAN, std=OPENAI_DATASET_STD)
 
         self.video_ids = []
         self.question_ids = []
         self.video_files = []
-        self.text_inputs = []
         self.prompts = []
         self.answers = []
 
-        for key in self.data.keys():
-            item = self.data[key]
-            self.question_ids.append(key)
-            self.video_files.append(key+'.mp4')
-            self.video_ids.append(key)
-            answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
-            conversations = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
-                {"from": "gpt", "value": answer}
-            ]
-            self.text_inputs.append(self.chat_template.encode(conversations))
+        for item in self.data:
+            if item['video_id'] not in self.video_ids:
+                self.question_ids.append(item['sen_id'])
+                self.video_files.append(item['video_id']+'.mp4')
+                self.video_ids.append(item['video_id'])
+                self.answers.append(item['caption']+'.')
 
-            prompt_conv = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
-                {"from": "gpt", "value": ''}                
-            ]
-            sep, eos = self.chat_template.separator.apply()
-            prompt = self.chat_template.encode(prompt_conv).replace(eos, '')
-            self.answers.append(answer)
-            self.prompts.append(prompt)
+                conversations = [
+                {"from": "human", "value": "<image>\n"+"Describe the following video concisely."},
+                {"from": "gpt", "value": ''}
+                ]
+                sep, eos = self.chat_template.separator.apply()
+                prompt = self.chat_template.encode(conversations).replace(eos, '')
+                self.prompts.append(prompt)
 
     def __len__(self):
+        """returns the length of dataframe"""
         return len(self.video_ids)
-
-    def convert_dense_captions(self, captions, timestamps):
-        res = []
-        for cap, ts in zip(captions, timestamps):
-            cap = cap.strip()
-            text = f'From <{ts[0]}> to <{ts[1]}>, {cap}'
-            res.append(text)
-        res = '\n'.join(res)
-        return res
-
-    def convert_time_position(self, answer, duration):
-        # 定义一个函数，将匹配到的浮点数转换为整数
-        def replace_float(match):
-            time = float(match.group(1))
-            quantized_time = int(self.num_temporal_tokens * time / duration)
-            return f'<{quantized_time}>'
-        # 使用正则表达式匹配所有的浮点数时间戳
-        pattern = r'<(\d+\.\d+)>'
-        # 替换匹配到的浮点数时间戳
-        new_answer = re.sub(pattern, replace_float, answer)
-        return new_answer
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
         video_id = str(self.video_ids[index])
         question_id = str(self.question_ids[index])
-        text_input = self.text_inputs[index]
+        prompt = self.prompts[index]
         video_file = str(self.video_files[index])
         answer = str(self.answers[index])
-        prompt = self.prompts[index]
 
         pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
             video_path = os.path.join(self.video_path, video_file),
@@ -126,22 +99,18 @@ class ANet_Caption(Dataset):
                 "video_ids": video_id,
                 "question_ids": question_id,
                 "prompts": prompt,
-                "answers": self.convert_time_position(answer, duration),
-                "text_inputs": self.convert_time_position(text_input, duration),
+                "answers": answer,
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
-                "durations":  float(duration),
             }
 
 
-# dataset = ANet_Caption()
+# dataset = MSRVTT_Caption()
 # for i in range(10):
-#     entry = random.choice(dataset)
-#     print(entry['question_ids'], entry['video_ids'])
-#     print("prompts: ",             entry['prompts'])
-#     print("text_inputs: ",             entry['text_inputs'])
-#     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
-#     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
+#     sample = random.choice(dataset)
+#     print("video_ids: ", sample['video_ids'], "question_ids: ", sample['question_ids'])
+#     print(sample['temporal_pixel_values'].shape, sample['spatial_pixel_values'].shape)
+#     print("prompts: ", sample['prompts'])
+#     print("answers: ", sample['answers'])
 #     print()
 # print(len(dataset))
-

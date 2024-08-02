@@ -15,7 +15,7 @@ from mm_utils.utils import *
 
 
 msrvtt_pred = load_json('./experiments/acc_records_msrvtt_caption_pretrain.json')
-msrvtt_label = load_json('/home/haibo/data/msrvttqa/test_caption.json')['sentences']
+msrvtt_label = load_json('/home/haibo/data/msrvttqa/test_videodatainfo.json')['sentences']
 msrvtt_eval_anno = {}
 
 for item in msrvtt_pred:

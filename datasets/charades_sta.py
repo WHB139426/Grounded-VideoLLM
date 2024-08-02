@@ -7,6 +7,7 @@ from PIL import Image
 import pickle
 import sys
 import os
+import torch
 import requests
 from collections import Counter
 from io import BytesIO
@@ -154,6 +155,7 @@ class Charades_STA(Dataset):
                 "text_inputs": self.convert_time_position(text_input, duration),
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
+                "durations": float(duration),
             }
 
 # dataset = Charades_STA()
@@ -163,6 +165,7 @@ class Charades_STA(Dataset):
 #     print("prompts: ",             entry['prompts'])
 #     print("answers: ",             entry['answers'])
 #     print("text_inputs: ",             entry['text_inputs'])
+#     print("durations: ",             entry['durations'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()

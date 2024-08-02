@@ -1,0 +1,8 @@
+[
+  {
+    "video_ids": "3MSZA",
+    "question_ids": "3MSZA",
+    "prompts": "<|start_header_id|>system<|end_header_id|>You are a helpful language and vision assistant. You are able to understand the visual content that the user provides, and assist the user with a variety of tasks using natural language.<|start_header_id|>user<|end_header_id|><image>\nAt which time interval in the video can we see person turn a light on?<|start_header_id|>assistant<|end_header_id|>",
+    "pred_texts": "From <0> to <299>.",
+    "answers": "From <235> to <294>.",
+    "durations": 

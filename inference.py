@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument('--dtype', type=torch.dtype, default=torch.float16, choices=[torch.bfloat16, torch.float32])
 
     # model && dataset
-    parser.add_argument('--dataset', type=str, default='qvhighlights', choices=['tempcompass', 'msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights'])
+    parser.add_argument('--dataset', type=str, default='charades_sta', choices=['msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights'])
     parser.add_argument('--model', type=str, default='llava_next_video', choices=['llava_next_video'])
     parser.add_argument('--llm', type=str, default='llama3', choices=['llama3', 'vicuna'])
     parser.add_argument('--stage', type=str, default="grounded", choices=['pretrain', 'grounded', 'sft'])
@@ -89,6 +89,7 @@ def eval(args, val_dataset, model):
                     "prompts": data['prompts'][i],
                     "pred_texts": pred_texts[i],
                     "answers": data['answers'][i] if 'answers' in data.keys() else 'N/A.',
+                    "durations": float(data['durations'][i]) if 'durations' in data.keys() else 'N/A.',
                 }
             )
 
@@ -100,18 +101,7 @@ if __name__ == '__main__':
     args = parse_args()
     init_seeds(args.seed)
 
-    if args.dataset == 'tempcompass':
-        from datasets.tempcompass import TempCompass
-        val_dataset = TempCompass(
-            anno_path = '/home/haibo/data/TempCompass/questions/captioning.json',
-            video_path = "/home/haibo/data/TempCompass/videos",
-            num_frames = args.num_frames,
-            num_segs = args.num_segs,
-            num_temporal_tokens = args.num_temporal_tokens,
-            sample='middle',
-            llm=args.llm,
-        )
-    elif args.dataset == 'msrvtt_caption':
+    if args.dataset == 'msrvtt_caption':
         from datasets.msrvtt_caption import MSRVTT_Caption
         val_dataset = MSRVTT_Caption(
             video_path = "/home/haibo/data/msrvttqa/videos",

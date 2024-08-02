@@ -133,6 +133,7 @@ class QVHighlights(Dataset):
                 "text_inputs": self.convert_time_position(text_input, duration),
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
+                "durations":  float(duration),
             }
 
 # dataset = QVHighlights()
