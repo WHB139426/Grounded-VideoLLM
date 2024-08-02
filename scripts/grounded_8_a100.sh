@@ -2,12 +2,12 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-pe
     --model llava_next_video \
     --llm llama3 \
     --dataset mix_grounded \
-    --max_txt_len 2048 \
+    --max_txt_len 4096 \
     --num_temporal_tokens 300 \
     --num_frames 96 \
     --num_segs 12 \
     --stage grounded \
-    --epoch 1 \
+    --epoch 3 \
     --lora \
     --lora_lr 2e-4 \
     --lr 2e-5 \

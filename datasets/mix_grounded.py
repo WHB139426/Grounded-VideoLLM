@@ -28,6 +28,8 @@ class MixGrounded(Dataset):
         vtimellm_video_path = '/home/haibo/data/vtimellm_stage2/clips',
         anet_anno_path = "/home/haibo/data/activitynet/captions/train.json",
         anet_video_path = '/home/haibo/data/activitynet/videos',
+        internvidg_anno_path = "/home/haibo/data/InternVid-G/simplified_filter_train.json",
+        internvidg_video_path = '/home/haibo/data/InternVid-G/videos',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,
@@ -37,6 +39,7 @@ class MixGrounded(Dataset):
         self.moment_video_path = moment_video_path
         self.vtimellm_video_path = vtimellm_video_path
         self.anet_video_path = anet_video_path
+        self.internvidg_video_path = internvidg_video_path
         self.num_frames = num_frames
         self.num_segs = num_segs
         self.num_temporal_tokens = num_temporal_tokens
@@ -45,6 +48,7 @@ class MixGrounded(Dataset):
         self.moment_data = load_json(moment_anno_path)
         self.vtimellm_data = load_json(vtimellm_anno_path)
         self.anet_data = load_json(anet_anno_path)
+        self.internvidg_data = load_json(internvidg_anno_path)
 
         if llm == 'llama3':
             self.chat_template = LLaMA3_Template()
@@ -70,8 +74,12 @@ class MixGrounded(Dataset):
             self.video_files.append(item['video_id']+'.mp4')
             self.video_ids.append(item['video_id'])
             answer = self.convert_dense_captions(item['captions'], item['timestamps'])
+            if len(item['captions']) >= 10:
+                instruction = random.choice(dense_caption_prompts_detail)
+            else:
+                instruction = random.choice(dense_caption_prompts_short)
             conversations = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
+                {"from": "human", "value": "<image>\n"+instruction},
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
@@ -96,12 +104,44 @@ class MixGrounded(Dataset):
             self.video_files.append(key+'.mp4')
             self.video_ids.append(key)
             answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
+            if len(item['sentences']) >= 10:
+                instruction = random.choice(dense_caption_prompts_detail)
+            else:
+                instruction = random.choice(dense_caption_prompts_short)
             conversations = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
+                {"from": "human", "value": "<image>\n"+instruction},
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
             self.dataset_names.append('anet-caption')
+
+        for item in self.internvidg_data:
+            video_id = item['video'].replace('.mp4','')
+            self.question_ids.append(video_id)
+            self.video_files.append(video_id+'.mp4')
+            self.video_ids.append(video_id)
+            caption = item['caption']
+            start_time = item['start_sec']
+            end_time = item['end_sec']
+
+            random_number = random.random()
+            if random_number < 0.3:
+                answer = caption[0].upper() + caption[1:] + '.'
+                instruction = random.choice(vtu_prompts).replace('<start>', f'<{start_time}>').replace('<end>', f'<{end_time}>')
+                conversations = [
+                    {"from": "human", "value": "<image>\n"+instruction},
+                    {"from": "gpt", "value": answer}
+                ]
+            else:
+                answer = f'From <{start_time}> to <{end_time}>.'
+                instruction = random.choice(vtg_prompts).replace("'%s'", caption)
+                conversations = [
+                    {"from": "human", "value": "<image>\n"+instruction},
+                    {"from": "gpt", "value": answer}
+                ]
+
+            self.text_inputs.append(self.chat_template.encode(conversations))
+            self.dataset_names.append('internvid-g')
 
     def convert_dense_captions(self, captions, timestamps):
         res = []
@@ -162,6 +202,8 @@ class MixGrounded(Dataset):
             video_path = os.path.join(self.vtimellm_video_path, video_file)
         elif dataset_name == 'anet-caption':
             video_path = os.path.join(self.anet_video_path, video_file)
+        elif dataset_name == 'internvid-g':
+            video_path = os.path.join(self.internvidg_video_path, video_file)
 
         pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
             video_path = video_path,

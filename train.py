@@ -131,6 +131,8 @@ def pretrain(args) -> None:
         vtimellm_video_path = '/home/haibo/data/vtimellm_stage2/clips',
         anet_anno_path = "/home/haibo/data/activitynet/captions/train.json",
         anet_video_path = '/home/haibo/data/activitynet/videos',
+        internvidg_anno_path = "/home/haibo/data/InternVid-G/simplified_filter_train.json",
+        internvidg_video_path = '/home/haibo/data/InternVid-G/videos',
         num_frames = args.num_frames,
         num_segs = args.num_segs,
         num_temporal_tokens = args.num_temporal_tokens,

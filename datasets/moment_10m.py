@@ -105,8 +105,12 @@ class Moment10M_GESM(Dataset):
             self.video_files.append(item['video_id']+'.mp4')
             self.video_ids.append(item['video_id'])
             answer = self.convert_dense_captions(item['captions'], item['timestamps'])
+            if len(item['captions']) >= 10:
+                instruction = random.choice(dense_caption_prompts_detail)
+            else:
+                instruction = random.choice(dense_caption_prompts_short)
             conversations = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
+                {"from": "human", "value": "<image>\n"+instruction},
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))

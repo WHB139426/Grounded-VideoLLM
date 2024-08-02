@@ -22,7 +22,7 @@ def find_and_delete_empty_files(directory):
 '/data3/whb/data/DiDeMo/videos'
 """
 # 示例使用
-directory_path = '/data3/whb/data/DiDeMo/videos'
+directory_path = '/home/haibo/data/InternVid-G/videos'
 
 empty_files = find_and_delete_empty_files(directory_path)
 

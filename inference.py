@@ -93,7 +93,7 @@ def eval(args, val_dataset, model):
                 }
             )
 
-        save_json(acc_records, f'acc_records_{args.dataset}_{args.stage}.json')
+        save_json(acc_records, f'./experiments/acc_records_{args.dataset}_{args.stage}.json')
 
 
 

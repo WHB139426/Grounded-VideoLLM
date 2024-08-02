@@ -30,17 +30,15 @@ def check_directory_for_corrupted_mp4s(directory):
     return corrupted_files
 
 
-directory_to_check = '/data3/whb/data/Moment-10m/videos'  # 替换为你要检查的目录路径
-corrupted_files = check_directory_for_corrupted_mp4s(directory_to_check)
+# directory_to_check = '/home/haibo/data/InternVid-G/videos'  # 替换为你要检查的目录路径
+# corrupted_files = check_directory_for_corrupted_mp4s(directory_to_check)
 
-if corrupted_files:
-    print(f"Found {len(corrupted_files)} corrupted MP4 files:")
-    for file in corrupted_files:
-        print(file)
-else:
-    print("No corrupted MP4 files found.")
-
-
+# if corrupted_files:
+#     print(f"Found {len(corrupted_files)} corrupted MP4 files:")
+#     for file in corrupted_files:
+#         print(file)
+# else:
+#     print("No corrupted MP4 files found.")
 
 
 
@@ -55,10 +53,13 @@ else:
 
 
 
+
+
+# directory_to_check = '/home/haibo/data/InternVid-G/videos'  # 替换为你要检查的目录路径
 
 # files = os.listdir(directory_to_check)
 
-# files_1 = files[4700:5100]
+# files_1 = files[850:900]
 
 
 # for file in files_1:
@@ -66,15 +67,15 @@ else:
 #     is_mp4_corrupted(os.path.join(directory_to_check, file))
 
 
-"""
-QHxzKtysxc0.mp4
-O_kvVWhEY3M.mp4
-Mw0jKTAue40.mp4
-pkZC46LCgKE.mp4
-VJ8vqatmn0M.mp4
-JiGShiWw_Ic.mp4
-"""
+# """
+# QHxzKtysxc0.mp4
+# O_kvVWhEY3M.mp4
+# Mw0jKTAue40.mp4
+# pkZC46LCgKE.mp4
+# VJ8vqatmn0M.mp4
+# JiGShiWw_Ic.mp4
+# """
 
-# moment_10m_delete = ['YeGrxJYntk8.mp4', 'eX4gMhCW6RY.mp4']
+# moment_10m_delete = ['FOk358JthPQ.mp4', 'LhFHBud42a0.mp4']
 # for file in moment_10m_delete:
 #     os.remove(os.path.join(directory_to_check, file)) 

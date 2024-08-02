@@ -10,19 +10,22 @@ from torchvision.transforms import Normalize, Compose, InterpolationMode, ToTens
 from typing import Optional, Tuple, Any, Union, List
 
 
-dense_caption_prompts = [
+dense_caption_prompts_detail = [
+    "Detect and list each event in detail and its corresponding timestamps that appears in the video.",
+    "Determine the start and end times of all activity events in detail, accompanied by descriptions.",
+    "Capture and describe the activity events in detail, specifying their respective time intervals.",
+    "Identify, timestamp, and describe various activity events occurring in the video without omission. The timestamp should include the start time and end time in seconds.",
+    "Examine the video and enumerate all events you can see in detail, together with their start and end times.",
+    "Perform a thorough analysis of the video and list out every event in detail with its timestamps.",
+    "In the provided video, pinpoint and list all the events in detail, together with their respective time intervals.",
+    "Could you outline all the events in detail and their timestamps that are visible within the video?",
+]
+
+dense_caption_prompts_short = [
     "Localize a series of activity events in the video, output the start and end timestamp for each event, and describe each event with sentences.",
-    "Detect and list each event and its corresponding timestamps that appears in the video.",
-    "Determine the start and end times of various activity events in the video, accompanied by descriptions.",
-    "Capture and describe the activity events in the given video, specifying their respective time intervals.",
-    "Identify, timestamp, and describe various activity events occurring in the video. The timestamp should include the start time and end time in seconds.",
-    "Examine the video and enumerate all events you can see, together with their start and end times.",
     "Detect and report the start and end timestamps of activity events in the video, along with descriptions.",
-    "In the provided video, pinpoint and list all the events, together with their respective time intervals.",
-    "Pinpoint the time intervals of activity events in the video, and provide detailed descriptions for each event.",
-    "Perform a thorough analysis of the video and list out every event with its timestamps.",
-    "Could you outline all the events and their timestamps that are visible within the video?",
-    "Can you compile a comprehensive list of the activities and their timestamps featured in the video?",
+    "Pinpoint the time intervals of activity events in the video, and provide descriptions for each event.",
+    "Can you compile a list of the activities and their timestamps featured in the video?",
     "I need you to scrutinize the video and catalog every event it contains, along with the timestamps.",
 ]
 
@@ -38,7 +41,37 @@ short_caption_prompts = [
     "Render a clear and concise summary of the video below.", 
     "Write a terse but informative summary of the following video clip.", 
     "Create a compact narrative representing the video presented.",
-    ]
+]
+
+vtg_prompts = [
+    "When does '%s' happen in the video?",
+    "At what time does the occurrence of '%s' take place in the video?",
+    "During which part of the video does '%s' occur?",
+    "At what point in the video does the event '%s' happen?",
+    "When in the video does the '%s' incident occur?",
+    "At which moment does '%s' take place in the video?",
+    "During which phase of the video does '%s' happen?",
+    "When does the '%s' event occur in the video?",
+    "At what time does '%s' occur in the video sequence?",
+    "When does the '%s' situation take place in the video?",
+    "At which time interval in the video can we see '%s'?",
+]
+
+vtu_prompts = [
+    "What is happening from <start> to <end>?",
+    "What is taking place between <start> and <end>?",
+    "What events unfold between <start> and <end>?",
+    "What is happening during the period from <start> to <end>?",
+    "What occurs between <start> and <end>?",
+    "What is going on from <start> to <end>?",
+    "How do things progress from <start> to <end>?",
+    "Can you describe what happens from <start> to <end>?",
+    "Describe the events occurring between <start> and <end>.",
+    "Narrate the actions that unfold from <start> to <end>.",
+    "Summarize the happenings between <start> and <end>.",
+    "Identify the main activities occurring from <start> to <end>.",
+    "Provide an overview of what happens from <start> to <end>.",
+]
 
 def _convert_to_rgb(image):
     return image.convert('RGB')

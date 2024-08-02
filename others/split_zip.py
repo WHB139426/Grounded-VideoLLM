@@ -49,8 +49,7 @@ def split_folder_into_zips(folder_path, output_dir, chunk_size=30*1024*1024*1024
 
 
 # Run the split function
-print('spliting----------------------------------/data4/whb/data/internvid------------------------------------------')
-split_folder_into_zips("/data3/whb/data/internvid", "/data4/whb/data/internvid")
+split_folder_into_zips("/home/haibo/data/InternVid-G/", "/home/haibo/data/InternVid-G/")
 
 
 

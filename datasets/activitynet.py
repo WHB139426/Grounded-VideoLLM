@@ -50,20 +50,27 @@ class ANet_Caption(Dataset):
         self.prompts = []
         self.answers = []
 
+        cap_list = []
+
         for key in self.data.keys():
             item = self.data[key]
+            cap_list.append(len(item['sentences']))
             self.question_ids.append(key)
             self.video_files.append(key+'.mp4')
             self.video_ids.append(key)
             answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
+            if len(item['sentences']) >= 10:
+                instruction = random.choice(dense_caption_prompts_detail)
+            else:
+                instruction = random.choice(dense_caption_prompts_short)
             conversations = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
+                {"from": "human", "value": "<image>\n"+instruction},
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
 
             prompt_conv = [
-                {"from": "human", "value": "<image>\n"+random.choice(dense_caption_prompts)},
+                {"from": "human", "value": "<image>\n"+instruction},
                 {"from": "gpt", "value": ''}                
             ]
             sep, eos = self.chat_template.separator.apply()
@@ -135,7 +142,7 @@ class ANet_Caption(Dataset):
             }
 
 
-# dataset = ANet_Caption()
+dataset = ANet_Caption()
 # for i in range(10):
 #     entry = random.choice(dataset)
 #     print(entry['question_ids'], entry['video_ids'])

@@ -19,7 +19,12 @@ def parse_time_interval(text, duration, num_temporal_tokens=300):
     numbers = re.findall(r'\d+', text)
     # 将匹配到的数字转换为整数并返回
     ret = [duration*int(num)/num_temporal_tokens for num in numbers]
-    return ret[0], ret[1]
+    if len(ret) == 2:
+        return ret[0], ret[1]
+    else:
+        print('wrong!!')
+        return 0, duration
+    
 
 def calculate_iou(pred_interval, gt_interval):
     pred_start, pred_end = pred_interval
@@ -46,7 +51,7 @@ def all_metric(data):
         duration = entry['durations']
         pred_interval = parse_time_interval(entry['pred_texts'], duration)
         gt_interval = parse_time_interval(entry['answers'], duration)
-        
+
         iou = calculate_iou(pred_interval, gt_interval)
         ious.append(iou)
         
@@ -62,13 +67,25 @@ def all_metric(data):
     recall_at_05 /= total
     recall_at_07 /= total
     mIoU = sum(ious) / total
-    
+
     return recall_at_03, recall_at_05, recall_at_07, mIoU
 
 
-data = load_json('/home/haibo/workspace/Grounded-VideoLLM/acc_records_charades_sta_grounded.json')
-recall_at_03, recall_at_05, recall_at_07, mIoU = all_metric(data)
-print("recall_@_0.3", recall_at_03, '\n', 
+charades_sta_data = load_json('./experiments/acc_records_charades_sta_grounded.json')
+recall_at_03, recall_at_05, recall_at_07, mIoU = all_metric(charades_sta_data)
+print(
+    "Charades_STA: \n"
+    "recall_@_0.3", recall_at_03, '\n', 
+    "recall_@_0.5", recall_at_05, '\n',
+    "recall_@_0.7", recall_at_07, '\n',
+    "recall_@_mIoU", mIoU)
+
+
+anet_grounding_data = load_json('acc_records_anet_grounding_grounded.json')
+recall_at_03, recall_at_05, recall_at_07, mIoU = all_metric(anet_grounding_data)
+print(
+    "ANet_Grouding: \n"
+    "recall_@_0.3", recall_at_03, '\n', 
     "recall_@_0.5", recall_at_05, '\n',
     "recall_@_0.7", recall_at_07, '\n',
     "recall_@_mIoU", mIoU)
