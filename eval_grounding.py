@@ -81,7 +81,7 @@ print(
     "recall_@_mIoU", mIoU)
 
 
-anet_grounding_data = load_json('acc_records_anet_grounding_grounded.json')
+anet_grounding_data = load_json('./experiments/acc_records_anet_grounding_grounded.json')
 recall_at_03, recall_at_05, recall_at_07, mIoU = all_metric(anet_grounding_data)
 print(
     "ANet_Grouding: \n"
