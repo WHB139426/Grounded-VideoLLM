@@ -223,7 +223,7 @@ class MixGrounded(Dataset):
             spatial_pixel_values.append(self.image_processor(pixel_values[i_spatial]))
         spatial_pixel_values = torch.tensor(np.array(spatial_pixel_values)) # [num_segs, 3, 336, 336]
 
-        time_pos_left, time_pos_right, coefficient_left, coefficient_right = self.pos_text_coefficient(frame_indices, total_frame_num)
+        # time_pos_left, time_pos_right, coefficient_left, coefficient_right = self.pos_text_coefficient(frame_indices, total_frame_num)
 
         return {
                 "video_ids": video_id,
@@ -233,10 +233,10 @@ class MixGrounded(Dataset):
                 "spatial_pixel_values": spatial_pixel_values,
                 "dataset_names": dataset_name,
 
-                "time_pos_left": time_pos_left,
-                "time_pos_right": time_pos_right,
-                "coefficient_left": coefficient_left,
-                "coefficient_right": coefficient_right,
+                # "time_pos_left": time_pos_left,
+                # "time_pos_right": time_pos_right,
+                # "coefficient_left": coefficient_left,
+                # "coefficient_right": coefficient_right,
             }
 
 # dataset = MixGrounded(llm='llama3')

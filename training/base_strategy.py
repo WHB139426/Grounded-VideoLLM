@@ -191,10 +191,10 @@ class TrainingStrategy(ABC):
                             "temporal_pixel_values":batch['temporal_pixel_values'],
                             "spatial_pixel_values": batch['spatial_pixel_values'],
 
-                            "time_pos_left": batch['time_pos_left'] if 'time_pos_left' in batch.keys() else 'N/A.',
-                            "time_pos_right": batch['time_pos_right'] if 'time_pos_right' in batch.keys() else 'N/A.',
-                            "coefficient_left": batch['coefficient_left'] if 'coefficient_left' in batch.keys() else 'N/A.',
-                            "coefficient_right": batch['coefficient_right'] if 'coefficient_right' in batch.keys() else 'N/A.',
+                            # "time_pos_left": batch['time_pos_left'] if 'time_pos_left' in batch.keys() else 'N/A.',
+                            # "time_pos_right": batch['time_pos_right'] if 'time_pos_right' in batch.keys() else 'N/A.',
+                            # "coefficient_left": batch['coefficient_left'] if 'coefficient_left' in batch.keys() else 'N/A.',
+                            # "coefficient_right": batch['coefficient_right'] if 'coefficient_right' in batch.keys() else 'N/A.',
                             }
                         outputs = self.vlm(samples)
                         loss = outputs['loss']
