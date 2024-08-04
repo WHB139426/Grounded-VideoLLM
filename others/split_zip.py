@@ -49,9 +49,8 @@ def split_folder_into_zips(folder_path, output_dir, chunk_size=30*1024*1024*1024
 
 
 # Run the split function
-# split_folder_into_zips("/home/haibo/data/VideoChat_instruct/", "/home/haibo/data/VideoChat_instruct/")
-# split_folder_into_zips("/home/haibo/data/videchat2_conversations/", "/home/haibo/data/videchat2_conversations/")
-# split_folder_into_zips("/home/haibo/data/Charades/", "/home/haibo/data/Charades/")
+split_folder_into_zips("/home/haibo/data/Moment-10m/", "/home/haibo/data/Moment-10m/")
+
 
 
 

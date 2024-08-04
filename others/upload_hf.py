@@ -19,7 +19,7 @@ def delete_zip_files(directory):
 login()
 api = HfApi()
 
-dir_names = ['DiDeMo', "VideoChat_instruct", "videchat2_conversations", "Charades"]
+dir_names = ['Moment-10m']
 for dir_name in dir_names:
     num_file = count_zip_files(f"/home/haibo/data/{dir_name}")
     print(num_file)
@@ -27,7 +27,7 @@ for dir_name in dir_names:
         api.upload_file(
             path_or_fileobj=f"/home/haibo/data/{dir_name}/chunk_{i+1}.zip",
             path_in_repo=f"chunk_{i+1}.zip",
-            repo_id=f"WHB139426/{dir_name}",
+            repo_id=f"WHB139426/Moment-10m-copy",
             repo_type="dataset",
         )
     delete_zip_files(f"/home/haibo/data/{dir_name}/")
