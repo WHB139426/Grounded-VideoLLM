@@ -30,7 +30,7 @@ def check_directory_for_corrupted_mp4s(directory):
     return corrupted_files
 
 
-# directory_to_check = '/home/haibo/data/InternVid-G/videos'  # 替换为你要检查的目录路径
+# directory_to_check = '/home/haibo/data/DiDeMo/videos'  # 替换为你要检查的目录路径
 # corrupted_files = check_directory_for_corrupted_mp4s(directory_to_check)
 
 # if corrupted_files:
