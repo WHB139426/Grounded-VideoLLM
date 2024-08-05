@@ -1,3 +1,3 @@
 git add .
-git commit -m 'updata'
+git commit -m 'update'
 git push origin psu
