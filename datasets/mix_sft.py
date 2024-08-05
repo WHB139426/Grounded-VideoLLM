@@ -20,5 +20,5 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
 
 dataset_names = [
-    'ANet_RTL'. 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG_IT',
+    'ANet_RTL'. 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG_IT', 'Moment_10m',
     ]
