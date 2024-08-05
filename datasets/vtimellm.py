@@ -17,7 +17,7 @@ from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-def filter_unexist_data(data, file_path='/home/haibo/data/vtimellm_stage2/clips'):
+def filter_unexist_data(data, file_path='/data/hvw5451/data/vtimellm_stage2/clips'):
     exist_files = os.listdir(file_path)
     fiter_files = []
     for item in tqdm(data):
@@ -26,16 +26,16 @@ def filter_unexist_data(data, file_path='/home/haibo/data/vtimellm_stage2/clips'
             fiter_files.append(item)
     return fiter_files
 
-# data = load_json('/home/haibo/data/vtimellm_stage2/stage2.json')
+# data = load_json('/data/hvw5451/data/vtimellm_stage2/stage2.json')
 # fiter_files = filter_unexist_data(data)
 # print(len(data), len(fiter_files))
-# save_json(fiter_files, "/home/haibo/data/vtimellm_stage2/simplified_train.json")
+# save_json(fiter_files, "/data/hvw5451/data/vtimellm_stage2/simplified_train.json")
 
 class VTimeLLM_Stage2(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/vtimellm_stage2/simplified_train.json",
-        video_path = '/home/haibo/data/vtimellm_stage2/clips',
+        anno_path = "/data/hvw5451/data/vtimellm_stage2/simplified_train.json",
+        video_path = '/data/hvw5451/data/vtimellm_stage2/clips',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,
@@ -144,9 +144,9 @@ class VTimeLLM_Stage2(Dataset):
 class VTimeLLM_Stage3(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/vtimellm_stage3/stage3.json",
-        anet_video_path = '/home/haibo/data/activitynet/videos',
-        didemo_video_path = '/home/haibo/data/DiDeMo/videos',
+        anno_path = "/data/hvw5451/data/vtimellm_stage2/stage3.json",
+        anet_video_path = '/data/hvw5451/data/activitynet/videos',
+        didemo_video_path = '/data/hvw5451/data/DiDeMo/videos',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,

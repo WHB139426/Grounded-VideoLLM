@@ -18,7 +18,7 @@ from mm_utils.video_utils import read_frames_decord
 from datasets.chat.base_template import LLaMA3_Template
 
 
-# def filter_unexist(data, file_path='/home/haibo/data/internvid/clips'):
+# def filter_unexist(data, file_path='/data/hvw5451/data/internvid/clips'):
 
 #     exist_files = os.listdir(file_path)
 #     fiter_files = []
@@ -28,16 +28,16 @@ from datasets.chat.base_template import LLaMA3_Template
 #             fiter_files.append(item)
 #     return fiter_files
 
-# data = load_json("/home/haibo/data/internvid/InternVid-10M-flt-filter.json")
+# data = load_json("/data/hvw5451/data/internvid/InternVid-10M-flt-filter.json")
 # fiter_files = filter_unexist(data)
-# save_json(fiter_files, "/home/haibo/data/internvid/simplified_internVid-10M-flt-filter.json")
+# save_json(fiter_files, "/data/hvw5451/data/internvid/simplified_internVid-10M-flt-filter.json")
 # print(len(data), len(fiter_files))
 
 class Internvid(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/internvid/simplified_internVid-10M-flt-filter.json",
-        video_path = "/home/haibo/data/internvid/clips",
+        anno_path = "/data/hvw5451/data/internvid/simplified_internVid-10M-flt-filter.json",
+        video_path = "/data/hvw5451/data/internvid/clips",
         num_frames = 128,
         num_segs = 16,
         num_temporal_tokens = 500,

@@ -21,8 +21,8 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 class MSRVTT_Caption(Dataset):
     def __init__(
         self,
-        video_path = "/home/haibo/data/msrvttqa/videos",
-        anno_path = '/home/haibo/data/msrvttqa/test_videodatainfo.json',
+        video_path = "/data/hvw5451/data/msrvttqa/videos",
+        anno_path = '/data/hvw5451/data/msrvttqa/test_videodatainfo.json',
         num_frames = 128,
         num_segs = 16,
         num_temporal_tokens = 500,

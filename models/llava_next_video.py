@@ -61,47 +61,47 @@ class LLAVA_NEXT_VIDEO(nn.Module):
         self.llm = llm
 
         if self.llm == 'llama3':
-            self.config = AutoConfig.from_pretrained("/home/haibo/weights/llama3-llava-next-8b")
-            self.tokenizer = AutoTokenizer.from_pretrained("/home/haibo/weights/Meta-Llama-3-8B-Instruct", use_fast=False, truncation_side="left")
+            self.config = AutoConfig.from_pretrained("/data/hvw5451/weights/llama3-llava-next-8b")
+            self.tokenizer = AutoTokenizer.from_pretrained("/data/hvw5451/weights/Meta-Llama-3-8B-Instruct", use_fast=False, truncation_side="left")
             self.tokenizer.eos_token_id = 128009 # '<|eot_id|>'
             self.tokenizer.pad_token_id = 128001 # '<|end_of_text|>'
             self.separator = LLaMA3_Template.separator
         elif self.llm == 'vicuna':
-            self.config = AutoConfig.from_pretrained("/home/haibo/weights/llava-v1.6-vicuna-7b")
-            self.tokenizer = AutoTokenizer.from_pretrained("/home/haibo/weights/vicuna-7b-v1.5", use_fast=False, truncation_side="left")
+            self.config = AutoConfig.from_pretrained("/data/hvw5451/weights/llava-v1.6-vicuna-7b")
+            self.tokenizer = AutoTokenizer.from_pretrained("/data/hvw5451/weights/vicuna-7b-v1.5", use_fast=False, truncation_side="left")
             self.separator = Vicuna_Template.separator
 
         print("loading vision_tower")
         self.config.vision_config.torch_dtype = self.dtype
         self.vision_tower = CLIPVisionModel(self.config.vision_config)
         if self.llm == 'llama3':
-            self.vision_tower.load_state_dict(torch.load('/home/haibo/weights/llama3-llava-next-8b-seperated/vision_model.pth', map_location='cpu'))
-            self.image_newline = torch.load('/home/haibo/weights/llama3-llava-next-8b-seperated/image_newline.pth', map_location='cpu')['image_newline'].to(self.dtype)
+            self.vision_tower.load_state_dict(torch.load('/data/hvw5451/weights/llama3-llava-next-8b-seperated/vision_model.pth', map_location='cpu'))
+            self.image_newline = torch.load('/data/hvw5451/weights/llama3-llava-next-8b-seperated/image_newline.pth', map_location='cpu')['image_newline'].to(self.dtype)
         elif self.llm == 'vicuna':
-            self.vision_tower.load_state_dict(torch.load('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/vision_model.pth', map_location='cpu'))
-            self.image_newline = torch.load('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/image_newline.pth', map_location='cpu')['image_newline'].to(self.dtype)
+            self.vision_tower.load_state_dict(torch.load('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/vision_model.pth', map_location='cpu'))
+            self.image_newline = torch.load('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/image_newline.pth', map_location='cpu')['image_newline'].to(self.dtype)
 
         print("loading video_encoder")
         self.video_encoder = pretrain_internvideo2_1b_patch14_224(self.num_frames//self.num_segs)
-        state_dict = torch.load('/home/haibo/weights/internvideo/vision-encoder-InternVideo2-stage2_1b-224p-f4.pt', map_location='cpu')
+        state_dict = torch.load('/data/hvw5451/weights/internvideo/vision-encoder-InternVideo2-stage2_1b-224p-f4.pt', map_location='cpu')
         interpolate_pos_embed_internvideo2_new(state_dict, self.video_encoder, orig_t_size=4)
         self.video_encoder.load_state_dict(state_dict, strict=True)
 
         print("loading multi_modal_projector")
         self.multi_modal_projector = LlavaMultiModalProjector(self.config)
         if self.llm == 'llama3':
-            self.multi_modal_projector.load_state_dict(torch.load('/home/haibo/weights/llama3-llava-next-8b-seperated/multi_modal_projector.pth', map_location='cpu'))
+            self.multi_modal_projector.load_state_dict(torch.load('/data/hvw5451/weights/llama3-llava-next-8b-seperated/multi_modal_projector.pth', map_location='cpu'))
         elif self.llm == 'vicuna':
-            self.multi_modal_projector.load_state_dict(torch.load('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/multi_modal_projector.pth', map_location='cpu'))
+            self.multi_modal_projector.load_state_dict(torch.load('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/multi_modal_projector.pth', map_location='cpu'))
 
         print("loading video_projector")
         self.video_projecter = Video_Projecter(1408, self.config.hidden_size)
 
         print("loading language_model")
         if self.llm == 'llama3':
-            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
         elif self.llm == 'vicuna':
-            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
 
         self.all_module_keys = ["vision_tower", "language_model", "video_encoder", "multi_modal_projector", "video_projecter"]
 
@@ -547,7 +547,7 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 
         return output_text
 
-# device = "cuda:3"
+# device = "cuda:7"
 # # device = "cpu"
 # dtype = torch.float32 if device == 'cpu' else torch.bfloat16
 # num_frames=96
@@ -580,10 +580,6 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 #             "prompts": [prompt for i in range(len(data['text_inputs']))],
 #             "temporal_pixel_values":data['temporal_pixel_values'].to(device),
 #             "spatial_pixel_values": data['spatial_pixel_values'].to(device),
-#             "time_pos_left": data['time_pos_left'],
-#             "time_pos_right": data['time_pos_right'],
-#             "coefficient_left": data['coefficient_left'].to(device),
-#             "coefficient_right": data['coefficient_right'].to(device),
 #         }
 #     loss = model(samples)
 #     print(loss)

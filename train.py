@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument('--warmup_ratio', type=float, default=0.03)
     parser.add_argument('--lr_scheduler_type', type=str, default="linear-warmup+cosine-decay")
 
-    parser.add_argument('--save_dir', type=str, default='/home/haibo/weights/ckpt')
+    parser.add_argument('--save_dir', type=str, default='/data/hvw5451/weights/ckpt')
     parser.add_argument('--pretrained_proj', type=str, default='')
 
     args = parser.parse_args()
@@ -110,12 +110,12 @@ def pretrain(args) -> None:
     if args.dataset == 'mix_pretrain':
         from datasets.mix_pretrain import MixPretrain
         train_dataset = MixPretrain(
-        webvid_anno_path = "/home/haibo/data/webvid-703k/filtered_train.json",
-        webvid_video_path = "/home/haibo/data/webvid-703k/videos",
-        panda_anno_path = "/home/haibo/data/panda70m_2m/simplified_panda.json",
-        panda_video_path = "/home/haibo/data/panda70m_2m/clips",
-        internvid_anno_path = "/home/haibo/data/internvid/simplified_internVid-10M-flt-filter.json",
-        internvid_video_path = "/home/haibo/data/internvid/clips",
+        webvid_anno_path = "/data/hvw5451/data/webvid-703k/filtered_train.json",
+        webvid_video_path = "/data/hvw5451/data/webvid-703k/videos",
+        panda_anno_path = "/data/hvw5451/data/panda70m_2m/simplified_panda.json",
+        panda_video_path = "/data/hvw5451/data/panda70m_2m/clips",
+        internvid_anno_path = "/data/hvw5451/data/internvid/simplified_internVid-10M-flt-filter.json",
+        internvid_video_path = "/data/hvw5451/data/internvid/clips",
         num_frames = args.num_frames,
         num_segs = args.num_segs,
         num_temporal_tokens = args.num_temporal_tokens,
@@ -125,14 +125,14 @@ def pretrain(args) -> None:
     elif args.dataset == 'mix_grounded':
         from datasets.mix_grounded import MixGrounded
         train_dataset = MixGrounded(
-        moment_anno_path = "/home/haibo/data/Moment-10m/simplified_GESM_data.json",
-        moment_video_path = "/home/haibo/data/Moment-10m/videos",
-        vtimellm_anno_path = "/home/haibo/data/vtimellm_stage2/simplified_train.json",
-        vtimellm_video_path = '/home/haibo/data/vtimellm_stage2/clips',
-        anet_anno_path = "/home/haibo/data/activitynet/captions/train.json",
-        anet_video_path = '/home/haibo/data/activitynet/videos',
-        internvidg_anno_path = "/home/haibo/data/InternVid-G/simplified_filter_train.json",
-        internvidg_video_path = '/home/haibo/data/InternVid-G/videos',
+        moment_anno_path = "/data/hvw5451/data/Moment-10m/simplified_GESM_data.json",
+        moment_video_path = "/data/hvw5451/data/Moment-10m/videos",
+        vtimellm_anno_path = "/data/hvw5451/data/vtimellm_stage2/simplified_train.json",
+        vtimellm_video_path = '/data/hvw5451/data/vtimellm_stage2/clips',
+        anet_anno_path = "/data/hvw5451/data/activitynet/captions/train.json",
+        anet_video_path = '/data/hvw5451/data/activitynet/videos',
+        internvidg_anno_path = "/data/hvw5451/data/InternVid-G/simplified_filter_train.json",
+        internvidg_video_path = '/data/hvw5451/data/InternVid-G/videos',
         num_frames = args.num_frames,
         num_segs = args.num_segs,
         num_temporal_tokens = args.num_temporal_tokens,

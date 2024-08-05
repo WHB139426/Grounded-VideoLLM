@@ -15,7 +15,7 @@ from mm_utils.utils import *
 
 
 msrvtt_pred = load_json('./experiments/acc_records_msrvtt_caption_pretrain.json')
-msrvtt_label = load_json('/home/haibo/data/msrvttqa/test_videodatainfo.json')['sentences']
+msrvtt_label = load_json('/data/hvw5451/data/msrvttqa/test_videodatainfo.json')['sentences']
 msrvtt_eval_anno = {}
 
 for item in msrvtt_pred:
@@ -29,7 +29,7 @@ for item in msrvtt_label:
     msrvtt_eval_anno[item['video_id']]['labels'].append(str(item['caption']))
 
 msvd_pred = load_json('./experiments/acc_records_msvd_caption_pretrain.json')
-msvd_label = load_json('/home/haibo/data/msvdqa/test_captions.json')
+msvd_label = load_json('/data/hvw5451/data/msvdqa/test_captions.json')
 msvd_eval_anno = {}
 
 for item in msvd_pred:

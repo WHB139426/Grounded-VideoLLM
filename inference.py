@@ -18,9 +18,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     # evaluation
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--eval_bs', type=int, default=1)
-    parser.add_argument('--device', type=str, default='cuda:3')
-    parser.add_argument('--dtype', type=torch.dtype, default=torch.float16, choices=[torch.bfloat16, torch.float32])
+    parser.add_argument('--eval_bs', type=int, default=4)
+    parser.add_argument('--device', type=str, default='cuda:7')
+    parser.add_argument('--dtype', type=torch.dtype, default=torch.bfloat16, choices=[torch.bfloat16, torch.float32])
 
     # model && dataset
     parser.add_argument('--dataset', type=str, default='anet_grounding', choices=['msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights', 'anet_grounding'])
@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument('--llm', type=str, default='llama3', choices=['llama3', 'vicuna'])
     parser.add_argument('--stage', type=str, default="grounded", choices=['pretrain', 'grounded', 'sft'])
     parser.add_argument('--max_txt_len', type=int, default=2048)
-    parser.add_argument('--ckpt', type=str, default='/home/haibo/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth')
+    parser.add_argument('--ckpt', type=str, default='/data/hvw5451/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth')
 
     parser.add_argument('--num_temporal_tokens', type=int, default=300)
     parser.add_argument('--num_frames', type=int, default=96)
@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument('--lora', type=bool, default=True)
 
     # generation
-    parser.add_argument('--do_sample', type=bool, default=True)
+    parser.add_argument('--do_sample', type=bool, default=False)
     parser.add_argument('--num_beams', type=int, default=1)
     parser.add_argument('--max_new_tokens', type=int, default=2048)
     parser.add_argument('--temperature', type=float, default=0.2)
@@ -92,8 +92,10 @@ def eval(args, val_dataset, model):
                     "durations": float(data['durations'][i]) if 'durations' in data.keys() else 'N/A.',
                 }
             )
-
-        save_json(acc_records, f'./experiments/acc_records_{args.dataset}_{args.stage}.json')
+        print(acc_records[-1]['prompts'])
+        print(acc_records[-1]['pred_texts'])
+        print(acc_records[-1]['answers'])
+        # save_json(acc_records, f'./experiments/acc_records_{args.dataset}_{args.stage}.json')
 
 
 
@@ -104,8 +106,8 @@ if __name__ == '__main__':
     if args.dataset == 'msrvtt_caption':
         from datasets.msrvtt_caption import MSRVTT_Caption
         val_dataset = MSRVTT_Caption(
-            video_path = "/home/haibo/data/msrvttqa/videos",
-            anno_path = '/home/haibo/data/msrvttqa/test_caption.json',
+            video_path = "/data/hvw5451/data/msrvttqa/videos",
+            anno_path = '/data/hvw5451/data/msrvttqa/test_caption.json',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,
@@ -115,8 +117,8 @@ if __name__ == '__main__':
     elif args.dataset == 'msvd_caption':
         from datasets.msvd_caption import MSVD_Caption
         val_dataset = MSVD_Caption(
-            video_path = "/home/haibo/data/msvdqa/videos",
-            anno_path = '/home/haibo/data/msvdqa/test_captions.json',
+            video_path = "/data/hvw5451/data/msvdqa/videos",
+            anno_path = '/data/hvw5451/data/msvdqa/test_captions.json',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,
@@ -126,8 +128,8 @@ if __name__ == '__main__':
     elif args.dataset == 'anet_caption':
         from datasets.activitynet import ANet_Caption
         val_dataset = ANet_Caption(
-            anno_path = "/home/haibo/data/activitynet/captions/val_1.json",
-            video_path = '/home/haibo/data/activitynet/videos',
+            anno_path = "/data/hvw5451/data/activitynet/captions/val_1.json",
+            video_path = '/data/hvw5451/data/activitynet/videos',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,
@@ -137,8 +139,8 @@ if __name__ == '__main__':
     elif args.dataset == 'anet_grounding':
         from datasets.activitynet import ANet_Grounding
         val_dataset = ANet_Grounding(
-            anno_path = "/home/haibo/data/activitynet/captions/val_1.json",
-            video_path = '/home/haibo/data/activitynet/videos',
+            anno_path = "/data/hvw5451/data/activitynet/captions/val_1.json",
+            video_path = '/data/hvw5451/data/activitynet/videos',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,
@@ -148,8 +150,8 @@ if __name__ == '__main__':
     elif args.dataset == 'charades_sta':
         from datasets.charades_sta import Charades_STA
         val_dataset = Charades_STA(
-            anno_path = "/home/haibo/data/Charades/charades_sta_test.json",
-            video_path = '/home/haibo/data/Charades/videos',
+            anno_path = "/data/hvw5451/data/Charades/charades_sta_test.json",
+            video_path = '/data/hvw5451/data/Charades/videos',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,
@@ -159,8 +161,8 @@ if __name__ == '__main__':
     elif args.dataset == 'qvhighlights':
         from datasets.qvhighlights import QVHighlights
         val_dataset = QVHighlights(
-            anno_path = "/home/haibo/data/qvhighlights/highlight_val_release.jsonl",
-            video_path = '/home/haibo/data/qvhighlights/videos',
+            anno_path = "/data/hvw5451/data/qvhighlights/highlight_val_release.jsonl",
+            video_path = '/data/hvw5451/data/qvhighlights/videos',
             num_frames = args.num_frames,
             num_segs = args.num_segs,
             num_temporal_tokens = args.num_temporal_tokens,

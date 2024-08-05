@@ -7,6 +7,7 @@ from PIL import Image
 import pickle
 import sys
 import os
+import torch
 import requests
 from collections import Counter
 from io import BytesIO
@@ -14,36 +15,47 @@ import json
 import cv2
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from mm_utils.utils import *
-from mm_utils.video_utils import read_frames_decord
-from datasets.chat.base_template import LLaMA3_Template
+from mm_utils.video_utils import read_frames_decord, read_frames_av
+from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-def remove_duplicates(data):
-    seen_ids = set()
-    unique_list = []
-    
+def most_common_element(lst):
+    tuples = [tuple(sublist) for sublist in lst]
+    counter = Counter(tuples)
+    most_common = counter.most_common(1)[0][0]
+    return list(most_common)
+
+def filter_unexist(data, file_path='/data/hvw5451/data/DiDeMo/videos'):
+    exist_files = os.listdir(file_path)
+    fiter_files = []
     for item in data:
-        if item['video'] not in seen_ids:
-            unique_list.append(item)
-            seen_ids.add(item['video'])
-    
-    return unique_list
+        video_id = item['video'].split('.')[0]
+        caption = item['description']
+        timestamp = most_common_element(item['times'])
+        if f'{video_id}.mp4' in exist_files:
+            fiter_files.append({
+                "video_id": video_id,
+                "caption": caption,
+                "timestamp": [timestamp[0]*5, timestamp[1]*5+5]
+            })
+    return fiter_files
 
-# for i in range(frames.shape[0]):
-#     frame = frames[i]
-#     # 转换为 (316, 600, 3) 的形状
-#     frame = frame.permute(1, 2, 0).numpy()
-#     image = Image.fromarray(frame)
-#     image.save(f'/data3/whb/code/FSDP/frames/frame_{i + 1}.jpg')
+# data = load_json('/data/hvw5451/data/DiDeMo/train_data.json')
+# filter_data = filter_unexist(data)
+# print(len(data), len(filter_data))
+# print(filter_data[0])
+# save_json(filter_data, '/data/hvw5451/data/DiDeMo/filter_train.json')
 
-class Webvid_232k(Dataset):
+
+class DiDeMo(Dataset):
     def __init__(
         self,
-        anno_path = "/data/hvw5451/data/webvid-703k/filtered_train.json",
-        video_path = "/data/hvw5451/data/webvid-703k/videos",
-        num_frames = 128,
-        num_segs = 16,
-        num_temporal_tokens = 500,
+        anno_path = "/data/hvw5451/data/DiDeMo/filter_train.json",
+        video_path = '/data/hvw5451/data/DiDeMo/videos',
+        num_frames = 96,
+        num_segs = 12,
+        num_temporal_tokens = 300,
         sample='rand',
+        llm='llama3',
     ):
         self.video_path = video_path
         self.num_frames = num_frames
@@ -52,7 +64,10 @@ class Webvid_232k(Dataset):
         self.sample = sample
 
         self.data = load_json(anno_path)
-        self.chat_template = LLaMA3_Template()
+        if llm == 'llama3':
+            self.chat_template = LLaMA3_Template()
+        elif llm == 'vicuna':
+            self.chat_template = Vicuna_Template()
 
         self.video_processor = frame_transform(image_size=224, mean=INTERNVIDEO_MEAN, std=INTERNVIDEO_STD)
         self.image_processor = frame_transform(image_size=336, mean=OPENAI_DATASET_MEAN, std=OPENAI_DATASET_STD)
@@ -63,16 +78,35 @@ class Webvid_232k(Dataset):
         self.text_inputs = []
 
         for item in self.data:
-            self.question_ids.append(item['id'])
-            self.video_files.append(item['video'])
-            self.video_ids.append(item['video'])
+            self.question_ids.append(item['video_id'])
+            self.video_files.append(item['video_id']+'.mp4')
+            self.video_ids.append(item['video_id'])
+            caption = item['caption']
+            start_time = item['timestamp'][0]
+            end_time = item['timestamp'][1]
+            answer = f'From <{start_time}> to <{end_time}>.'
+            instruction = random.choice(sft_vtg_two_end_prompts).replace("<query_placeholder>", f"'{caption}'")
 
-            conversations = item['conversations']
-            conversations[0]['value'] = conversations[0]['value'].replace('\n<video>', '\n<image>')
+            conversations = [
+                {"from": "human", "value": "<image>\n"+instruction},
+                {"from": "gpt", "value": answer}
+            ]
             self.text_inputs.append(self.chat_template.encode(conversations))
 
     def __len__(self):
         return len(self.video_ids)
+
+    def convert_time_position(self, answer, duration):
+        # 定义一个函数，将匹配到的浮点数转换为整数
+        def replace_float(match):
+            time = float(match.group(1))
+            quantized_time = int(self.num_temporal_tokens * time / duration)
+            return f'<{quantized_time}>'
+        # 使用正则表达式匹配所有的浮点数时间戳
+        pattern = r'<(\d+\.\d+)>'
+        # 替换匹配到的浮点数时间戳
+        new_answer = re.sub(pattern, replace_float, answer)
+        return new_answer
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
@@ -102,26 +136,19 @@ class Webvid_232k(Dataset):
         return {
                 "video_ids": video_id,
                 "question_ids": question_id,
-                "text_inputs": text_input,
+                "text_inputs": self.convert_time_position(text_input, duration),
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
+                "durations": float(duration),
             }
 
-
-
-# dataset = Webvid_232k()
-# for i in range(1000):
+# dataset = DiDeMo()
+# for i in range(50):
 #     entry = random.choice(dataset)
 #     print(entry['question_ids'], entry['video_ids'])
 #     print("text_inputs: ",             entry['text_inputs'])
+#     print("durations: ",             entry['durations'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))
-
-
-# dataset = Webvid_232k()
-# from torch.utils.data import Dataset, DataLoader
-# data_loader = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False, num_workers=16, pin_memory=True, prefetch_factor=None)
-# for step, data in enumerate(tqdm(data_loader)):
-#     continue

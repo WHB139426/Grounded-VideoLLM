@@ -7,6 +7,7 @@ from PIL import Image
 import pickle
 import sys
 import os
+import torch
 import requests
 from collections import Counter
 from io import BytesIO
@@ -14,34 +15,57 @@ import json
 import cv2
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from mm_utils.utils import *
-from mm_utils.video_utils import read_frames_decord
-from datasets.chat.base_template import LLaMA3_Template
+from mm_utils.video_utils import read_frames_decord, read_frames_av
+from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
+# data_captions = load_pkl('/data/hvw5451/data/querYD/raw_captions_combined_filtered.pkl')
+# data_time = load_pkl('/data/hvw5451/data/querYD/times_captions_combined_filtered.pkl')
+# new_data = []
+# for key in data_captions.keys():
+#     captions = data_captions[key]
+#     timestamps = data_time[key]
+#     for cap, timestamp in zip(captions, timestamps):
+#         new_data.append(
+#             {
+#                 "video_id": key,
+#                 "caption": ' '.join(cap),
+#                 'timestamp': timestamp,
+#             }
+#         )
+# print(len(new_data))
+# save_json(new_data, '/data/hvw5451/data/querYD/train.json')
 
-# def filter_unexist(data, file_path='/data/hvw5451/data/panda70m_2m/clips'):
-
+# def filter_unexist(data, file_path='/data/hvw5451/data/querYD/videos'):
 #     exist_files = os.listdir(file_path)
 #     fiter_files = []
-#     for item in tqdm(data):
-#         video_id = item['video_id']
+#     for item in data:
+#         video_id = item['video_id'].replace('video-','')
+#         caption = item['caption']
+#         timestamp = item['timestamp']
 #         if f'{video_id}.mp4' in exist_files:
-#             fiter_files.append(item)
+#             fiter_files.append({
+#                 "video_id": video_id,
+#                 "caption": caption,
+#                 "timestamp": timestamp
+#             })
 #     return fiter_files
 
-# data = load_json("/data/hvw5451/data/panda70m_2m/filtered_panda.json")
-# fiter_files = filter_unexist(data)
-# save_json(fiter_files, "/data/hvw5451/data/panda70m_2m/simplified_panda.json")
-# print(len(data), len(fiter_files))
+# data = load_json('/data/hvw5451/data/querYD/train.json')
+# print(len(data))
+# filter_data = filter_unexist(data)
+# print(len(filter_data))
+# save_json(filter_data, '/data/hvw5451/data/querYD/filter_train.json')
 
-class Panda_2m(Dataset):
+class querYD(Dataset):
     def __init__(
         self,
-        anno_path = "/data/hvw5451/data/panda70m_2m/simplified_panda.json",
-        video_path = "/data/hvw5451/data/panda70m_2m/clips",
-        num_frames = 128,
-        num_segs = 16,
-        num_temporal_tokens = 500,
+        anno_path = "/data/hvw5451/data/querYD/filter_train.json",
+        video_path = '/data/hvw5451/data/querYD/videos',
+        num_frames = 96,
+        num_segs = 12,
+        num_temporal_tokens = 300,
         sample='rand',
+        llm='llama3',
     ):
         self.video_path = video_path
         self.num_frames = num_frames
@@ -50,7 +74,10 @@ class Panda_2m(Dataset):
         self.sample = sample
 
         self.data = load_json(anno_path)
-        self.chat_template = LLaMA3_Template()
+        if llm == 'llama3':
+            self.chat_template = LLaMA3_Template()
+        elif llm == 'vicuna':
+            self.chat_template = Vicuna_Template()
 
         self.video_processor = frame_transform(image_size=224, mean=INTERNVIDEO_MEAN, std=INTERNVIDEO_STD)
         self.image_processor = frame_transform(image_size=336, mean=OPENAI_DATASET_MEAN, std=OPENAI_DATASET_STD)
@@ -64,21 +91,36 @@ class Panda_2m(Dataset):
             self.question_ids.append(item['video_id'])
             self.video_files.append(item['video_id']+'.mp4')
             self.video_ids.append(item['video_id'])
+            caption = item['caption']
+            start_time = item['timestamp'][0]
+            end_time = item['timestamp'][1]
+            if start_time == end_time:
+                answer = f'It happens in <{start_time}>.'
+                instruction = random.choice(sft_vtg_one_end_prompts).replace("<query_placeholder>", f"'{caption}'")
+            else:
+                answer = f'From <{start_time}> to <{end_time}>.'
+                instruction = random.choice(sft_vtg_two_end_prompts).replace("<query_placeholder>", f"'{caption}'")
 
             conversations = [
-            {
-                "from": "human",
-                "value": "<image>\n"+random.choice(short_caption_prompts)
-            },
-            {
-                "from": "gpt",
-                "value": item['caption']
-            }
+                {"from": "human", "value": "<image>\n"+instruction},
+                {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
 
     def __len__(self):
         return len(self.video_ids)
+
+    def convert_time_position(self, answer, duration):
+        # 定义一个函数，将匹配到的浮点数转换为整数
+        def replace_float(match):
+            time = float(match.group(1))
+            quantized_time = int(self.num_temporal_tokens * time / duration)
+            return f'<{quantized_time}>'
+        # 使用正则表达式匹配所有的浮点数时间戳
+        pattern = r'<(\d+\.\d+)>'
+        # 替换匹配到的浮点数时间戳
+        new_answer = re.sub(pattern, replace_float, answer)
+        return new_answer
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
@@ -108,27 +150,19 @@ class Panda_2m(Dataset):
         return {
                 "video_ids": video_id,
                 "question_ids": question_id,
-                "text_inputs": text_input,
+                "text_inputs": self.convert_time_position(text_input, duration),
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
+                "durations": float(duration),
             }
 
-
-
-# dataset = Panda_2m()
-# for i in range(10):
+# dataset = querYD()
+# for i in range(50):
 #     entry = random.choice(dataset)
 #     print(entry['question_ids'], entry['video_ids'])
 #     print("text_inputs: ",             entry['text_inputs'])
+#     print("durations: ",             entry['durations'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))
-
-# dataset = Panda_2m()
-# from torch.utils.data import Dataset, DataLoader
-# data_loader = DataLoader(dataset, batch_size=16, shuffle=True, drop_last=False, num_workers=16, pin_memory=True, prefetch_factor=None)
-# for step, data in enumerate(tqdm(data_loader)):
-#     continue
-
-

@@ -21,8 +21,8 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 class QVHighlights(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/qvhighlights/highlight_train_release.jsonl",
-        video_path = '/home/haibo/data/qvhighlights/videos',
+        anno_path = "/data/hvw5451/data/qvhighlights/highlight_train_release.jsonl",
+        video_path = '/data/hvw5451/data/qvhighlights/videos',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,

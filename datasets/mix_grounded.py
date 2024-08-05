@@ -22,14 +22,14 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 class MixGrounded(Dataset):
     def __init__(
         self,
-        moment_anno_path = "/home/haibo/data/Moment-10m/simplified_GESM_data.json",
-        moment_video_path = "/home/haibo/data/Moment-10m/videos",
-        vtimellm_anno_path = "/home/haibo/data/vtimellm_stage2/simplified_train.json",
-        vtimellm_video_path = '/home/haibo/data/vtimellm_stage2/clips',
-        anet_anno_path = "/home/haibo/data/activitynet/captions/train.json",
-        anet_video_path = '/home/haibo/data/activitynet/videos',
-        internvidg_anno_path = "/home/haibo/data/InternVid-G/simplified_filter_train.json",
-        internvidg_video_path = '/home/haibo/data/InternVid-G/videos',
+        moment_anno_path = "/data/hvw5451/data/Moment-10m/simplified_GESM_data.json",
+        moment_video_path = "/data/hvw5451/data/Moment-10m/videos",
+        vtimellm_anno_path = "/data/hvw5451/data/vtimellm_stage2/simplified_train.json",
+        vtimellm_video_path = '/data/hvw5451/data/vtimellm_stage2/clips',
+        anet_anno_path = "/data/hvw5451/data/activitynet/captions/train.json",
+        anet_video_path = '/data/hvw5451/data/activitynet/videos',
+        internvidg_anno_path = "/data/hvw5451/data/InternVid-G/simplified_filter_train.json",
+        internvidg_video_path = '/data/hvw5451/data/InternVid-G/videos',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,
@@ -232,6 +232,7 @@ class MixGrounded(Dataset):
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
                 "dataset_names": dataset_name,
+                "durations": float(duration),
 
                 # "time_pos_left": time_pos_left,
                 # "time_pos_right": time_pos_right,
@@ -240,9 +241,9 @@ class MixGrounded(Dataset):
             }
 
 # dataset = MixGrounded(llm='llama3')
-# for i in range(100):
+# for i in range(50):
 #     entry = random.choice(dataset)
-#     print(entry['question_ids'], entry['video_ids'], entry['dataset_names'])
+#     print(entry['question_ids'], entry['video_ids'], entry['dataset_names'], entry['durations'])
 #     print("text_inputs: ",             entry['text_inputs'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)

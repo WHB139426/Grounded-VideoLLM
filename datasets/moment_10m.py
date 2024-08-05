@@ -18,7 +18,7 @@ from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template
 
 
-def filter_unexist_gesm(data, file_path='/home/haibo/data/Moment-10m/videos'):
+def filter_unexist_gesm(data, file_path='/data/hvw5451/data/Moment-10m/videos'):
     exist_files = os.listdir(file_path)
     fiter_files = []
     for key in tqdm(data.keys()):
@@ -35,13 +35,13 @@ def filter_unexist_gesm(data, file_path='/home/haibo/data/Moment-10m/videos'):
     return fiter_files
 
 
-# data = load_json("/home/haibo/data/Moment-10m/GESM_data.json")
+# data = load_json("/data/hvw5451/data/Moment-10m/GESM_data.json")
 # fiter_files = filter_unexist_gesm(data)
-# save_json(fiter_files, "/home/haibo/data/Moment-10m/simplified_GESM_data.json")
+# save_json(fiter_files, "/data/hvw5451/data/Moment-10m/simplified_GESM_data.json")
 # print(len(data), len(fiter_files))
 
 
-def filter_unexist_moment_10m(data, file_path='/home/haibo/data/Moment-10m/videos'):
+def filter_unexist_moment_10m(data, file_path='/data/hvw5451/data/Moment-10m/videos'):
     exist_files = os.listdir(file_path)
     fiter_files = []
 
@@ -64,19 +64,19 @@ def filter_unexist_moment_10m(data, file_path='/home/haibo/data/Moment-10m/video
 
     return fiter_files
 
-# data = load_json("/home/haibo/data/Moment-10m/Moment-10M_0.json")
-# data2 = load_json("/home/haibo/data/Moment-10m/Moment-10M_1.json")
+# data = load_json("/data/hvw5451/data/Moment-10m/Moment-10M_0.json")
+# data2 = load_json("/data/hvw5451/data/Moment-10m/Moment-10M_1.json")
 # data.update(data2)
 # fiter_files = filter_unexist_moment_10m(data)
-# save_json(fiter_files, "/home/haibo/data/Moment-10m/simplified_Moment_10M.json")
+# save_json(fiter_files, "/data/hvw5451/data/Moment-10m/simplified_Moment_10M.json")
 # print(len(data), len(fiter_files))
 
 
 class Moment10M_GESM(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/Moment-10m/simplified_GESM_data.json",
-        video_path = "/home/haibo/data/Moment-10m/videos",
+        anno_path = "/data/hvw5451/data/Moment-10m/simplified_GESM_data.json",
+        video_path = "/data/hvw5451/data/Moment-10m/videos",
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,
@@ -201,11 +201,11 @@ dataset = Moment10M_GESM()
 
 
 
-# file_names = os.listdir('/home/haibo/data/Moment-10m/videos')
+# file_names = os.listdir('/data/hvw5451/data/Moment-10m/videos')
 # for file_name in tqdm(file_names):
 #     print(file_name)
 #     pixel_values, frame_indices, fps, total_frame_num = read_frames_decord(
-#         video_path = os.path.join('/home/haibo/data/Moment-10m/videos', file_name),
+#         video_path = os.path.join('/data/hvw5451/data/Moment-10m/videos', file_name),
 #         num_frames = 128,
 #         sample = 'rand',
 #     )
@@ -218,3 +218,69 @@ dataset = Moment10M_GESM()
 # for step, data in enumerate(tqdm(data_loader)):
 #     continue
 
+
+
+data = load_json('/data/hvw5451/data/Moment-10m/simplified_Moment_10M.json')
+
+data_types = []
+for item in data:
+    data_type = item['data_type']
+    if data_type not in data_types:
+        data_types.append(data_type)
+
+video_ids = []
+for item in data:
+    video_id = item['video_id']
+    if video_id not in video_ids:
+        video_ids.append(video_id)
+
+statics_data_type = {}
+for data_type in data_types:
+    statics_data_type[data_type] = []
+
+statics_video_id = {}
+for video_id in statics_video_id:
+    statics_video_id[video_id] = []
+
+for item in data:
+    data_type = item['data_type']
+    video_id = item['video_id']
+    statics_data_type[data_type].append(item)
+    statics_video_id[video_id].append(item)
+
+# for key in tqdm(statics_data_type.keys()):
+#     data_list = statics_data_type[key]
+#     for item in data_list:
+#         if item['clip_similarity'] == 'N/A.':
+#             item['clip_similarity'] = 0
+#         item['clip_similarity'] = float(item['clip_similarity'])
+#     data_list.sort(key=lambda x: x['clip_similarity'], reverse=True)
+#     statics_data_type[key] = data_list
+
+# new_data = []
+# for key in statics_datat_ype.keys():
+#     new_data += statics_datat_ype[key][:15000]
+
+for key in tqdm(statics_video_id.keys()):
+    data_list = statics_video_id[key]
+    for item in data_list:
+        if item['clip_similarity'] == 'N/A.':
+            item['clip_similarity'] = 0
+        item['clip_similarity'] = float(item['clip_similarity'])
+    data_list.sort(key=lambda x: x['clip_similarity'], reverse=True)
+    statics_video_id[key] = data_list
+
+new_data = []
+for key in tqdm(statics_video_id.keys()):
+    new_data += statics_video_id[key][:5]
+
+print(len(new_data))
+save_json(new_data, '/data/hvw5451/data/Moment-10m/less_simplified_Moment_10m.json')
+
+
+
+# data = load_json('/data/hvw5451/data/Moment-10m/less_simplified_Moment_10m.json')
+# video_ids = []
+# for item in data:
+#     video_ids.append(item['video_id'])
+# print(len(list(set(video_ids))))

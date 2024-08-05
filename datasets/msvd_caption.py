@@ -17,10 +17,10 @@ from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-# data = load_pkl('/home/haibo/data/msvdqa/raw-captions.pkl')
+# data = load_pkl('/data/hvw5451/data/msvdqa/raw-captions.pkl')
 # print(data['-4wsuPCjDBc_5_15'])
 
-# with open('/home/haibo/data/msvdqa/test_list.txt', 'r') as f:
+# with open('/data/hvw5451/data/msvdqa/test_list.txt', 'r') as f:
 #     reads = f.readlines() #txt中所有字符串读入data，得到的是一个list
 # test_ids = [r.replace('\n','') for r in reads]
 
@@ -37,13 +37,13 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 #             }
 #         )
 # print(new_data[0], len(new_data))
-# save_json(new_data, '/home/haibo/data/msvdqa/test_captions.json')
+# save_json(new_data, '/data/hvw5451/data/msvdqa/test_captions.json')
 
 class MSVD_Caption(Dataset):
     def __init__(
         self,
-        video_path = "/home/haibo/data/msvdqa/videos",
-        anno_path = '/home/haibo/data/msvdqa/test_captions.json',
+        video_path = "/data/hvw5451/data/msvdqa/videos",
+        anno_path = '/data/hvw5451/data/msvdqa/test_captions.json',
         num_frames = 128,
         num_segs = 16,
         num_temporal_tokens = 500,

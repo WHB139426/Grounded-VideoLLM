@@ -15,10 +15,10 @@ def load_json(path):
         data = json.load(f)
     return data
 
-exist_videos = load_json('/home/haibo/weights/exist_videos.json')
+exist_videos = load_json('./others/exist_videos.json')
 
 for key in exist_videos.keys():
-    video_path = f"/home/haibo/data/{key}/videos"
+    video_path = f"/data/hvw5451/data/{key}/videos"
     should_exist_files = exist_videos[key]
     current_files = os.listdir(video_path)
     print(key, len(should_exist_files), len(current_files))
@@ -27,5 +27,5 @@ for key in exist_videos.keys():
     for file in tqdm(current_files):
         if file not in should_exist_files:
             file_path = os.path.join(video_path, file)
-            # os.remove(file_path)
+            os.remove(file_path)
             print(f"Deleted {file_path}")

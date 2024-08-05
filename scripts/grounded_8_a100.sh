@@ -16,4 +16,4 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-pe
     --sharding_strategy full-shard \
     --global_batch_size 128 \
     --per_device_batch_size 4 \
-    --pretrained_proj /home/haibo/weights/ckpt/fsdp_pretrain_llava_next_video_mix_pretrain_multi_modal_projector_video_projecter.pth
+    --pretrained_proj /data/hvw5451/weights/ckpt/fsdp_pretrain_llava_next_video_mix_pretrain_multi_modal_projector_video_projecter.pth

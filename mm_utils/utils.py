@@ -29,6 +29,15 @@ dense_caption_prompts_short = [
     "I need you to scrutinize the video and catalog every event it contains, along with the timestamps.",
 ]
 
+dense_caption_prompts_one_end_short = [
+    "Localize a series of activity events in the video, output the one single timestamp for each event, and describe each event with sentences.",
+    "Detect and report the point of time of activity events in the video, along with descriptions.",
+    "Pinpoint the point of time of activity events in the video, and provide descriptions for each event.",
+    "Can you compile a list of the activities and their point of time featured in the video?",
+    "I need you to scrutinize the video and catalog every event it contains, along with one single timestamp.",
+    "I need you to scrutinize the video and catalog every event it contains, along with the point of time.",
+]
+
 short_caption_prompts = [
     "Describe the following video concisely.", 
     "Provide a brief description of the given video clip.", 
@@ -72,6 +81,43 @@ vtu_prompts = [
     "Identify the main activities occurring from <start> to <end>.",
     "Provide an overview of what happens from <start> to <end>.",
 ]
+
+sft_vtg_two_end_prompts = [
+    "Localize the visual content described by the given textual query <query_placeholder> in the video, and output the start and end timestamps.",
+    "Detect and report the start and end timestamps of the video segment that semantically matches the given textual query <query_placeholder>.",
+    "Give you a textual query: <query_placeholder>. When does the described content occur in the video? Please return the start and end timestamps.",
+    "Locate the visual content mentioned in the text query <query_placeholder> within the video, including start and end timestamps.",
+    "The given natural language query <query_placeholder> is semantically aligned with a video moment, please give the start time and end time of the video moment.",
+    "Find the video segment that corresponds to the given textual query <query_placeholder> and determine its start and end positions."
+]
+
+sft_vtg_one_end_prompts = [
+    "Localize the visual content described by the given textual query <query_placeholder> in the video, and output one single timestamp.",
+    "Detect and report the point of time of the video segment that semantically matches the given textual query <query_placeholder>.",
+    "Give you a textual query: <query_placeholder>. When does the described content occur in the video? Please return the point of time.",
+    "Locate the visual content mentioned in the text query <query_placeholder> within the video, including the point of time.",
+    "The given natural language query <query_placeholder> is semantically aligned with a video moment, please give the single timestamp point of the video moment.",
+    "Find the video segment that corresponds to the given textual query <query_placeholder> and determine its single timestamp point."
+]
+
+sft_specific_step_prompts = [
+    "Localize a series of action steps from <start> to <end>, output a start and end timestamp for each step, and briefly describe the step.",
+    "Locate and describe a series of actions or steps in the video from <start> to <end>, including their start and end timestamps.",
+    "Identify and mark the video segments corresponding to a series of actions or steps between <start> and <end>, specifying the timestamps and describing the steps.",
+    "Find, identify, and determine the temporal boundaries of a series of distinct actions or steps occurring between <start> and <end>. For each action, output the corresponding start and end timestamps, accompanied by a concise description.",
+    "Identify and localize a series of steps or actions occurring in the video from <start> to <end>, providing start and end timestamps and related descriptions.",
+    "Locate and pinpoint a sequential series of specific actions or steps in the video between <start> and <end>, accurately specifying the start and end timestamps for each action. Additionally, provide a succinct description of each action."
+]
+
+sft_step_prompts = [
+    "Localize a series of action steps in the given video, output a start and end timestamp for each step, and briefly describe the step.",
+    "Locate and describe a series of actions or steps in the video, including their start and end timestamps.",
+    "Identify and mark the video segments corresponding to a series of actions or steps, specifying the timestamps and describing the steps.",
+    "Find, identify, and determine the temporal boundaries of a series of distinct actions or steps occurring throughout the video. For each action, output the corresponding start and end timestamps, accompanied by a concise description.",
+    "Identify and localize a series of steps or actions occurring in the video, providing start and end timestamps and related descriptions.",
+    "Locate and pinpoint a sequential series of specific actions or steps in the video, accurately specifying the start and end timestamps for each action. Additionally, provide a succinct description of each action."
+]
+
 
 def _convert_to_rgb(image):
     return image.convert('RGB')
@@ -166,6 +212,14 @@ def load_image(image_file, pad=False):
     if pad:
         image = expand2square(image)
     return image
+
+def load_txt(path):
+    strings_list = []
+    with open(path, 'r') as file:
+        for line in file:
+            # 去除每行的换行符，并将其添加到列表中
+            strings_list.append(line.strip())
+    return strings_list
 
 def load_json(path):
     with open(path) as f:

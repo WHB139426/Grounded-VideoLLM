@@ -20,12 +20,12 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 class MixPretrain(Dataset):
     def __init__(
         self,
-        webvid_anno_path = "/home/haibo/data/webvid-703k/filtered_train.json",
-        webvid_video_path = "/home/haibo/data/webvid-703k/videos",
-        panda_anno_path = "/home/haibo/data/panda70m_2m/simplified_panda.json",
-        panda_video_path = "/home/haibo/data/panda70m_2m/clips",
-        internvid_anno_path = "/home/haibo/data/internvid/simplified_internVid-10M-flt-filter.json",
-        internvid_video_path = "/home/haibo/data/internvid/clips",
+        webvid_anno_path = "/data/hvw5451/data/webvid-703k/filtered_train.json",
+        webvid_video_path = "/data/hvw5451/data/webvid-703k/videos",
+        panda_anno_path = "/data/hvw5451/data/panda70m_2m/simplified_panda.json",
+        panda_video_path = "/data/hvw5451/data/panda70m_2m/clips",
+        internvid_anno_path = "/data/hvw5451/data/internvid/simplified_internVid-10M-flt-filter.json",
+        internvid_video_path = "/data/hvw5451/data/internvid/clips",
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 500,

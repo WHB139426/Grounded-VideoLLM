@@ -41,16 +41,16 @@ def read_txt_to_list(file_path):
                 )
     return data
 
-# train_data = read_txt_to_list("/home/haibo/data/Charades/charades_sta_train.txt")
-# test_data = read_txt_to_list("/home/haibo/data/Charades/charades_sta_test.txt")
-# save_json(train_data, '/home/haibo/data/Charades/charades_sta_train.json')
-# save_json(test_data, '/home/haibo/data/Charades/charades_sta_test.json')
+# train_data = read_txt_to_list("/data/hvw5451/data/Charades/charades_sta_train.txt")
+# test_data = read_txt_to_list("/data/hvw5451/data/Charades/charades_sta_test.txt")
+# save_json(train_data, '/data/hvw5451/data/Charades/charades_sta_train.json')
+# save_json(test_data, '/data/hvw5451/data/Charades/charades_sta_test.json')
 
 class Charades_STA(Dataset):
     def __init__(
         self,
-        anno_path = "/home/haibo/data/Charades/charades_sta_train.json",
-        video_path = '/home/haibo/data/Charades/videos',
+        anno_path = "/data/hvw5451/data/Charades/charades_sta_train.json",
+        video_path = '/data/hvw5451/data/Charades/videos',
         num_frames = 96,
         num_segs = 12,
         num_temporal_tokens = 300,
