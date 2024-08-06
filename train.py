@@ -139,6 +139,17 @@ def pretrain(args) -> None:
         sample='rand',
         llm=args.llm,
         )
+    elif args.dataset == 'sft':
+        from datasets.mix_sft import MixSFT
+        train_dataset = MixSFT(
+        anno_path = "/data/hvw5451/data/mix_sft/mix_sft.json",
+        video_path = "/data/hvw5451/data",
+        num_frames = args.num_frames,
+        num_segs = args.num_segs,
+        num_temporal_tokens = args.num_temporal_tokens,
+        sample='rand',
+        llm=args.llm,
+        )
 
     # Create Train Strategy
     overwatch.info(f"Initializing Train Strategy")
