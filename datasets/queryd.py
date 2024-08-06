@@ -87,6 +87,8 @@ class querYD(Dataset):
         self.video_files = []
         self.text_inputs = []
 
+        # save_files = []
+
         for item in self.data:
             self.question_ids.append(item['video_id'])
             self.video_files.append(item['video_id']+'.mp4')
@@ -106,6 +108,16 @@ class querYD(Dataset):
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
+
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video_id'],
+        #             'question_id': item['video_id'],
+        #             'video_file': 'querYD/videos/'+item['video_id']+'.mp4',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/querYD.json')
 
     def __len__(self):
         return len(self.video_ids)

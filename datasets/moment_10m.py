@@ -311,7 +311,8 @@ class Moment_10m(Dataset):
         self.video_files = []
         self.text_inputs = []
 
-        
+        save_files = []
+
         for item in self.data:
             self.question_ids.append(item['q_id'])
             self.video_files.append(item['video_id']+'.mp4')
@@ -347,14 +348,28 @@ class Moment_10m(Dataset):
                     timepoint = float(item['variables'][var][0])
                     if '{'+'click_position'+'}' in text_input:
                         position = text_input.find('{'+'click_position'+'}')
-                        if text_input[position-1:position] == '>':
+                        if text_input[position-2:position-1] == '>':
                             rep = f'At the point of time <{timepoint}>, '
                         else:    
                             rep = f'the point of time <{timepoint}>'
 
                 text_input = text_input.replace('{'+f'{var}'+'}', rep)
 
+                for i in range(len(conversations)):
+                    conversations[i]['value'] = conversations[i]['value'].replace('{'+f'{var}'+'}', rep)
+
             self.text_inputs.append(text_input)
+
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video_id'],
+        #             'question_id': item['q_id'],
+        #             'video_file': 'Moment-10m/videos/'+item['video_id']+'.mp4',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/Moment-10m.json')
+
 
     def __len__(self):
         return len(self.question_ids)

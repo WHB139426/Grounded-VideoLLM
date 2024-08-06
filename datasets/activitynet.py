@@ -318,6 +318,8 @@ class ANet_RTL(Dataset):
         self.video_files = []
         self.text_inputs = []
 
+        # save_files = []
+
         for key in self.data.keys():
             item = self.data[key]
             self.question_ids.append(key)
@@ -330,6 +332,16 @@ class ANet_RTL(Dataset):
 
             conversations[0]['value'] = "<image>\n" + conversations[0]['value']
             self.text_inputs.append(self.chat_template.encode(conversations))
+
+        #     save_files.append(
+        #         {
+        #             'video_id': key,
+        #             'question_id': key,
+        #             'video_file': 'activitynet/videos/'+key+'.mp4',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/ANet_RTL.json')
 
     def __len__(self):
         return len(self.video_ids)

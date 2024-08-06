@@ -112,6 +112,7 @@ class VTG_IT(Dataset):
         self.question_ids = []
         self.video_files = []
         self.text_inputs = []
+        save_files = []
 
         for item in self.data:
             self.question_ids.append(item['video_id'])
@@ -128,6 +129,15 @@ class VTG_IT(Dataset):
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
 
+            # save_files.append(
+            #     {
+            #         'video_id': item['video_id'],
+            #         'question_id': item['video_id'],
+            #         'video_file': 'VTG-IT/videos/'+item['video_id']+'.mp4',
+            #         'conversation': conversations
+            #     }
+            # )
+
         for item in self.data:
             self.question_ids.append(item['video_id'])
             self.video_files.append(item['video_id']+'.mp4')
@@ -143,6 +153,17 @@ class VTG_IT(Dataset):
                 {"from": "gpt", "value": answer}
             ]
             self.text_inputs.append(self.chat_template.encode(conversations))
+
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video_id'],
+        #             'question_id': item['video_id'],
+        #             'video_file': 'VTG-IT/videos/'+item['video_id']+'.mp4',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/VTG-IT.json')
+
 
     def __len__(self):
         return len(self.video_ids)

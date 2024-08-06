@@ -20,5 +20,16 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
 
 dataset_names = [
-    'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG_IT', 'Moment_10m',
+    'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m',
     ]
+
+mix_sft_grounding = []
+
+for key in dataset_names:
+    data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
+    print(key, len(data))
+    for i in range(len(data)):
+        data[i]['dataset_name'] = key
+    mix_sft_grounding += data
+print('mix_sft_grounding', len(mix_sft_grounding))
+save_json(mix_sft_grounding, '/data/hvw5451/data/mix_sft/mix_sft_grounding.json')
