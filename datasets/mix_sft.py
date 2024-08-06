@@ -42,6 +42,8 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 # mix_sft_instruction = []
 # for key in dataset_names_instruction:
 #     data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
+#     if key == 'webvid-caption':
+#         data = random.sample(data, int(len(data)/10))
 #     print(key, len(data))
 #     for i in range(len(data)):
 #         data[i]['dataset_name'] = key
@@ -148,7 +150,7 @@ class MixSFT(Dataset):
 
 
 # dataset = MixSFT()
-# for i in range(100):
+# for i in range(1000):
 #     entry = random.choice(dataset)
 #     print(entry['question_ids'], entry['video_ids'], entry['dataset_name'])
 #     print("text_inputs: ",             entry['text_inputs'])

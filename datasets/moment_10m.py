@@ -351,7 +351,7 @@ class Moment_10m(Dataset):
                         if text_input[position-2:position-1] == '>':
                             rep = f'At the point of time <{timepoint}>, '
                         else:    
-                            rep = f'the point of time <{timepoint}>'
+                            rep = f'point of time <{timepoint}>'
 
                 text_input = text_input.replace('{'+f'{var}'+'}', rep)
 
