@@ -153,6 +153,13 @@ class LLAVA_NEXT_VIDEO(nn.Module):
                 print("LORA llm")
                 self.lora_model()
 
+            print("Frozen Part LLM")
+            for name, param in self.language_model.named_parameters():
+                if 'lm_head' in name or 'embed_tokens' in name or 'lora' in name:
+                    param.requires_grad = True
+                else:
+                    param.requires_grad = False
+
             self.trainable_module_keys = ["multi_modal_projector", "video_projecter", "language_model"]  
         
     def lora_model(self,):
@@ -215,6 +222,8 @@ class LLAVA_NEXT_VIDEO(nn.Module):
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy_embedding()
         elif self.stage=='pretrain':
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
+        elif self.stage == 'sft':
+            llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy_embedding()
         else:
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
 

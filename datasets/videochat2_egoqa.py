@@ -63,14 +63,15 @@ class VideoChat2_EgoQA(Dataset):
 
             self.text_inputs.append(self.chat_template.encode(conversations))
 
-        #     save_files.append(
-        #         {
-        #             'video_id': item['video'].replace('.mp4', ''),
-        #             'question_id': item['video'].replace('.mp4', ''),
-        #             'video_file': 'videochat2_egoqa/videos/'+item['video'],
-        #             'conversation': conversations
-        #         }
-        #     )
+        #     if os.path.exists(os.path.join(self.video_path, item['video'])):
+        #         save_files.append(
+        #             {
+        #                 'video_id': item['video'].replace('.mp4', ''),
+        #                 'question_id': item['video'].replace('.mp4', ''),
+        #                 'video_file': 'videochat2_egoqa/videos/'+item['video'],
+        #                 'conversation': conversations
+        #             }
+        #         )
         # save_json(save_files, '/data/hvw5451/data/mix_sft/videochat2_egoqa.json')
 
     def __len__(self):

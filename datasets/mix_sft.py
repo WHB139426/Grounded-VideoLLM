@@ -156,3 +156,18 @@ class MixSFT(Dataset):
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))
+
+
+
+
+
+# missing = []
+# data = load_json("/data/hvw5451/data/mix_sft/mix_sft.json")
+# def filter_unexist(data, file_path='/data/hvw5451/data'):
+#     for item in tqdm(data):
+#         video_file_path = os.path.join(file_path, item['video_file'])
+#         if not os.path.exists(video_file_path):
+#             missing.append(item)
+#             print(f"{video_file_path} not exist!!!!!!")
+# filter_unexist(data)
+

@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('--model', type=str, default='llava_next_video', choices=['llava_next_video'])
     parser.add_argument('--llm', type=str, default='llama3', choices=['llama3', 'vicuna'])
 
-    parser.add_argument('--dataset', type=str, default='mix_pretrain', choices=['mix_pretrain', 'mix_grounded'])
+    parser.add_argument('--dataset', type=str, default='mix_pretrain', choices=['mix_pretrain', 'mix_grounded', 'mix_sft'])
     parser.add_argument('--max_txt_len', type=int, default=2048)
     parser.add_argument('--num_temporal_tokens', type=int, default=300)
     parser.add_argument('--num_frames', type=int, default=96)
@@ -139,7 +139,7 @@ def pretrain(args) -> None:
         sample='rand',
         llm=args.llm,
         )
-    elif args.dataset == 'sft':
+    elif args.dataset == 'mix_sft':
         from datasets.mix_sft import MixSFT
         train_dataset = MixSFT(
         anno_path = "/data/hvw5451/data/mix_sft/mix_sft.json",
