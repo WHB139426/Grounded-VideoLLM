@@ -101,6 +101,11 @@ def pretrain(args) -> None:
             ckpt = torch.load(args.pretrained_proj, map_location='cpu')['model']
             model.multi_modal_projector.load_state_dict(ckpt['multi_modal_projector'])
             model.video_projecter.load_state_dict(ckpt['video_projecter'])
+        elif args.stage=='sft' and len(args.pretrained_proj) > 0:
+            ckpt = torch.load(args.pretrained_proj, map_location='cpu')['model']
+            model.multi_modal_projector.load_state_dict(ckpt['multi_modal_projector'])
+            model.video_projecter.load_state_dict(ckpt['video_projecter'])
+            model.language_model.load_state_dict(ckpt['language_model'])    
 
     if overwatch.is_rank_zero():
         print(get_parameter_number(model))
