@@ -19,28 +19,26 @@ from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
 
-# dataset_names_grounding = [
-#     'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m',
-#     ]
-
-# mix_sft_grounding = []
-
-# for key in dataset_names_grounding:
-#     data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
-#     print(key, len(data))
-#     for i in range(len(data)):
-#         data[i]['dataset_name'] = key
-#     mix_sft_grounding += data
-# print('mix_sft_grounding', len(mix_sft_grounding))
-# save_json(mix_sft_grounding, '/data/hvw5451/data/mix_sft/mix_sft_grounding.json')
+dataset_names_grounding = [
+    'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m',
+    ]
+mix_sft_grounding = []
+for key in dataset_names_grounding:
+    data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
+    print(key, len(data))
+    for i in range(len(data)):
+        data[i]['dataset_name'] = key
+    mix_sft_grounding += data
+print('mix_sft_grounding', len(mix_sft_grounding))
+save_json(mix_sft_grounding, '/data/hvw5451/data/mix_sft/mix_sft_grounding.json')
 
 
 dataset_names_instruction = [
-    'sharegpt4video', 'vcg_plus_112k', 'videochat2_conversations', 'videochat_instruct', 'videochat2_egoqa', 'nextqa', 'clevrer', 'webvid-qa', 'sthsthv2', 'TextVR', 'youcook2', 'webvid-caption',
+    'vcg_plus_112k', 'videochat2_conversations', 'videochat_instruct', 
+    'videochat2_egoqa', 'nextqa', 'intentqa', 'clevrer', 'webvid-qa', 'sthsthv2', 
+    'TextVR', 'youcook2', 'webvid-caption', 'sharegpt4video', 
     ]
-
 mix_sft_instruction = []
-
 for key in dataset_names_instruction:
     data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
     print(key, len(data))
@@ -49,3 +47,7 @@ for key in dataset_names_instruction:
     mix_sft_instruction += data
 print('mix_sft_instruction', len(mix_sft_instruction))
 save_json(mix_sft_instruction, '/data/hvw5451/data/mix_sft/mix_sft_instruction.json')
+
+mix_sft = mix_sft_instruction + mix_sft_grounding
+print(len(mix_sft))
+save_json(mix_sft, '/data/hvw5451/data/mix_sft/mix_sft.json')

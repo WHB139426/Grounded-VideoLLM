@@ -5,6 +5,7 @@ from PIL import Image
 from io import BytesIO
 import json
 import os
+import pandas as pd
 import pickle
 from torchvision.transforms import Normalize, Compose, InterpolationMode, ToTensor, Resize, CenterCrop, ToPILImage
 from typing import Optional, Tuple, Any, Union, List
@@ -255,6 +256,16 @@ def load_pkl(path):
     with open(path, 'rb') as f:
         data = pickle.load(f)
     return data
+
+def load_csv(path):
+    file_list = []
+    data = pd.read_csv(path)
+    columns = data.columns.tolist()
+    for index, row in data.iterrows():
+        file_list.append({})
+        for column in columns:
+            file_list[index][column] = row[column]
+    return file_list
 
 def get_parameter_number(model):
     total_num = sum(p.numel() for p in model.parameters())
