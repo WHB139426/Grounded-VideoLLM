@@ -52,6 +52,18 @@ short_caption_prompts = [
     "Create a compact narrative representing the video presented.",
 ]
 
+detail_caption_prompts = [
+    "Summarize the video content thoroughly.",
+    "What does this video depict in detail?",
+    "How would you detail the actions shown in the video?",
+    "Create an in-depth description of the events occurring in the video.",
+    "Provide a detailed description of the events taking place in this video.",
+    "Offer a detailed analysis of this video.",
+    "Can you generate a comprehensive caption for this video?",
+    "Can you give me a detailed description of the provided video?",
+    "Describe this video in a detailed manner.",
+]
+
 vtg_prompts = [
     "When does '%s' happen in the video?",
     "At what time does the occurrence of '%s' take place in the video?",
@@ -117,6 +129,7 @@ sft_step_prompts = [
     "Identify and localize a series of steps or actions occurring in the video, providing start and end timestamps and related descriptions.",
     "Locate and pinpoint a sequential series of specific actions or steps in the video, accurately specifying the start and end timestamps for each action. Additionally, provide a succinct description of each action."
 ]
+
 
 
 def _convert_to_rgb(image):
