@@ -37,7 +37,7 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 # dataset_names_instruction = [
 #     'vcg_plus_112k', 'videochat2_conversations', 'videochat_instruct', 
 #     'videochat2_egoqa', 'nextqa', 'intentqa', 'clevrer', 'webvid-qa', 'sthsthv2', 'kinetics',
-#     'TextVR', 'youcook2', 'webvid-caption', 'sharegpt4video', 
+#     'TextVR', 'youcook2', 'webvid-caption', 'sharegpt4video', 'msvd_caption', 'msrvtt_caption',  
 #     ]
 # mix_sft_instruction = []
 # for key in dataset_names_instruction:

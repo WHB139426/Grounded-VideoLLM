@@ -22,7 +22,7 @@ class MSRVTT_Caption(Dataset):
     def __init__(
         self,
         video_path = "/data/hvw5451/data/msrvttqa/videos",
-        anno_path = '/data/hvw5451/data/msrvttqa/test_videodatainfo.json',
+        anno_path = '/data/hvw5451/data/msrvttqa/train_val_videodatainfo.json',
         num_frames = 128,
         num_segs = 16,
         num_temporal_tokens = 500,
@@ -50,6 +50,8 @@ class MSRVTT_Caption(Dataset):
         self.prompts = []
         self.answers = []
 
+        save_files = []
+
         for item in self.data:
             if item['video_id'] not in self.video_ids:
                 self.question_ids.append(item['sen_id'])
@@ -57,13 +59,31 @@ class MSRVTT_Caption(Dataset):
                 self.video_ids.append(item['video_id'])
                 self.answers.append(item['caption']+'.')
 
-                conversations = [
+                prompt_conversations = [
                 {"from": "human", "value": "<image>\n"+"Describe the following video concisely."},
                 {"from": "gpt", "value": ''}
                 ]
                 sep, eos = self.chat_template.separator.apply()
-                prompt = self.chat_template.encode(conversations).replace(eos, '')
+                prompt = self.chat_template.encode(prompt_conversations).replace(eos, '')
                 self.prompts.append(prompt)
+
+        #         answer = item['caption']
+        #         answer = answer[0].upper() + answer[1:] + '.'
+        #         conversations = [
+        #         {"from": "human", "value": "<image>\n"+random.choice(short_caption_prompts)},
+        #         {"from": "gpt", "value": answer}
+        #         ]
+
+        #         save_files.append(
+        #             {
+        #                 'video_id': item['video_id'],
+        #                 'question_id': item['video_id'],
+        #                 'video_file': 'msrvttqa/videos/'+item['video_id']+'.mp4',
+        #                 'conversation': conversations
+        #             }
+        #         )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/msrvtt_caption.json')
+
 
     def __len__(self):
         """returns the length of dataframe"""

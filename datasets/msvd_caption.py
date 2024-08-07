@@ -20,7 +20,7 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 # data = load_pkl('/data/hvw5451/data/msvdqa/raw-captions.pkl')
 # print(data['-4wsuPCjDBc_5_15'])
 
-# with open('/data/hvw5451/data/msvdqa/test_list.txt', 'r') as f:
+# with open('/data/hvw5451/data/msvdqa/train_list.txt', 'r') as f:
 #     reads = f.readlines() #txt中所有字符串读入data，得到的是一个list
 # test_ids = [r.replace('\n','') for r in reads]
 
@@ -37,13 +37,13 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 #             }
 #         )
 # print(new_data[0], len(new_data))
-# save_json(new_data, '/data/hvw5451/data/msvdqa/test_captions.json')
+# save_json(new_data, '/data/hvw5451/data/msvdqa/train_captions.json')
 
 class MSVD_Caption(Dataset):
     def __init__(
         self,
         video_path = "/data/hvw5451/data/msvdqa/videos",
-        anno_path = '/data/hvw5451/data/msvdqa/test_captions.json',
+        anno_path = '/data/hvw5451/data/msvdqa/train_captions.json',
         num_frames = 128,
         num_segs = 16,
         num_temporal_tokens = 500,
@@ -71,6 +71,8 @@ class MSVD_Caption(Dataset):
         self.prompts = []
         self.answers = []
 
+        save_files = []
+
         for item in self.data:
     
             self.question_ids.append(item['video_id'])
@@ -78,13 +80,30 @@ class MSVD_Caption(Dataset):
             self.video_ids.append(item['video_id'])
             self.answers.append(item['captions'][0]+'.')
 
-            conversations = [
+            prompt_conversations = [
             {"from": "human", "value": "<image>\n"+"Describe the following video concisely."},
             {"from": "gpt", "value": ''}
             ]
             sep, eos = self.chat_template.separator.apply()
-            prompt = self.chat_template.encode(conversations).replace(eos, '')
+            prompt = self.chat_template.encode(prompt_conversations).replace(eos, '')
             self.prompts.append(prompt)
+
+        #     answer = random.choice(item['captions'])
+        #     answer = answer[0].upper() + answer[1:] + '.'
+        #     conversations = [
+        #     {"from": "human", "value": "<image>\n"+random.choice(short_caption_prompts)},
+        #     {"from": "gpt", "value": answer}
+        #     ]
+
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video_id'],
+        #             'question_id': item['video_id'],
+        #             'video_file': 'msvdqa/videos/'+item['video_id']+'.avi',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/msvd_caption.json')
 
     def __len__(self):
         """returns the length of dataframe"""
