@@ -18,53 +18,13 @@ from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-
-# dataset_names_grounding = [
-#     'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m',
-#     ]
-# mix_sft_grounding = []
-# for key in dataset_names_grounding:
-#     data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
-#     print(key, len(data))
-#     for i in range(len(data)):
-#         data[i]['dataset_name'] = key
-#     mix_sft_grounding += data
-# print('mix_sft_grounding', len(mix_sft_grounding))
-# print()
-# save_json(mix_sft_grounding, '/data/hvw5451/data/mix_sft/mix_sft_grounding.json')
-
-
-# dataset_names_instruction = [
-#     'vcg_plus_112k', 'videochat2_conversations', 'videochat_instruct', 
-#     'videochat2_egoqa', 'nextqa', 'intentqa', 'clevrer', 'webvid-qa', 'sthsthv2', 'kinetics',
-#     'TextVR', 'youcook2', 'webvid-caption', 'sharegpt4video', 
-#     ]
-# mix_sft_instruction = []
-# for key in dataset_names_instruction:
-#     data = load_json(f'/data/hvw5451/data/mix_sft/{key}.json')
-#     if key == 'webvid-caption':
-#         data = random.sample(data, int(len(data)/10))
-#     print(key, len(data))
-#     for i in range(len(data)):
-#         data[i]['dataset_name'] = key
-#     mix_sft_instruction += data
-# print('mix_sft_instruction', len(mix_sft_instruction))
-# print()
-# save_json(mix_sft_instruction, '/data/hvw5451/data/mix_sft/mix_sft_instruction.json')
-
-# mix_sft = mix_sft_instruction + mix_sft_grounding
-# print('mix_sft', len(mix_sft))
-# save_json(mix_sft, '/data/hvw5451/data/mix_sft/mix_sft.json')
-
-
-
-class MixSFT(Dataset):
+class Kinetics(Dataset):
     def __init__(
         self,
-        anno_path = "/data/hvw5451/data/mix_sft/mix_sft.json",
-        video_path = "/data/hvw5451/data",
-        num_frames = 96,
-        num_segs = 12,
+        video_path = "/data/hvw5451/data/kinetics/videos",
+        anno_path = '/data/hvw5451/data/kinetics/filtered_train.json',
+        num_frames = 128,
+        num_segs = 16,
         num_temporal_tokens = 300,
         sample='rand',
         llm='llama3',
@@ -80,7 +40,7 @@ class MixSFT(Dataset):
             self.chat_template = LLaMA3_Template()
         elif llm == 'vicuna':
             self.chat_template = Vicuna_Template()
-
+            
         self.video_processor = frame_transform(image_size=224, mean=INTERNVIDEO_MEAN, std=INTERNVIDEO_STD)
         self.image_processor = frame_transform(image_size=336, mean=OPENAI_DATASET_MEAN, std=OPENAI_DATASET_STD)
 
@@ -88,30 +48,33 @@ class MixSFT(Dataset):
         self.question_ids = []
         self.video_files = []
         self.text_inputs = []
-        self.dataset_names = []
+
+        save_files = []
 
         for item in self.data:
-            self.question_ids.append(item['question_id'])
-            self.video_files.append(item['video_file'])
-            self.video_ids.append(item['video_id'])
-            conversations = item['conversation']
+            self.question_ids.append(item['video'].split('/')[-1].replace('.mp4', ''))
+            self.video_files.append(item['video'].split('/')[-1])
+            self.video_ids.append(item['video'].split('/')[-1].replace('.mp4', ''))
+            conversations = []
+            for i in range(len(item['QA'])):
+                conversations.append({"from": "human", "value": item['QA'][i]['i'] + ' ' + item['QA'][i]['q']})
+                conversations.append({"from": "gpt", "value": item['QA'][i]['a']})
+            conversations[0]['value'] = "<image>\n" + conversations[0]['value']
+
             self.text_inputs.append(self.chat_template.encode(conversations))
-            self.dataset_names.append(item['dataset_name'])
+
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video'].split('/')[-1].replace('.mp4', ''),
+        #             'question_id': item['video'].split('/')[-1].replace('.mp4', ''),
+        #             'video_file': 'kinetics/videos/' + item['video'].split('/')[-1],
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/kinetics.json')
 
     def __len__(self):
         return len(self.video_ids)
-
-    def convert_time_position(self, answer, duration):
-        # 定义一个函数，将匹配到的浮点数转换为整数
-        def replace_float(match):
-            time = float(match.group(1))
-            quantized_time = int(self.num_temporal_tokens * time / duration)
-            return f'<{quantized_time}>'
-        # 使用正则表达式匹配所有的浮点数时间戳
-        pattern = r'<(\d+\.\d+)>'
-        # 替换匹配到的浮点数时间戳
-        new_answer = re.sub(pattern, replace_float, answer)
-        return new_answer
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
@@ -119,8 +82,7 @@ class MixSFT(Dataset):
         question_id = str(self.question_ids[index])
         text_input = self.text_inputs[index]
         video_file = str(self.video_files[index])
-        dataset_name = self.dataset_names[index]
-        
+
         pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
             video_path = os.path.join(self.video_path, video_file),
             num_frames = self.num_frames,
@@ -142,34 +104,17 @@ class MixSFT(Dataset):
         return {
                 "video_ids": video_id,
                 "question_ids": question_id,
-                "text_inputs": self.convert_time_position(text_input, duration),
-                'dataset_name': dataset_name,
+                "text_inputs": text_input,
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
             }
 
-
-# dataset = MixSFT()
-# for i in range(1000):
+# dataset = Kinetics()
+# for i in range(10):
 #     entry = random.choice(dataset)
-#     print(entry['question_ids'], entry['video_ids'], entry['dataset_name'])
+#     print(entry['question_ids'], entry['video_ids'])
 #     print("text_inputs: ",             entry['text_inputs'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))
-
-
-
-
-
-# missing = []
-# data = load_json("/data/hvw5451/data/mix_sft/mix_sft.json")
-# def filter_unexist(data, file_path='/data/hvw5451/data'):
-#     for item in tqdm(data):
-#         video_file_path = os.path.join(file_path, item['video_file'])
-#         if not os.path.exists(video_file_path):
-#             missing.append(item)
-#             print(f"{video_file_path} not exist!!!!!!")
-# filter_unexist(data)
-
