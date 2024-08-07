@@ -20,7 +20,7 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
 
 # dataset_names_grounding = [
-#     'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m',
+#     'ANet_RTL', 'COIN', 'DiDeMo', 'HiREST', 'querYD', 'ViTT', 'VTG-IT', 'Moment-10m', 'activitynet-dense-caption'
 #     ]
 # mix_sft_grounding = []
 # for key in dataset_names_grounding:

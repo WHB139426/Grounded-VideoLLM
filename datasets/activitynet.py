@@ -21,7 +21,7 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 class ANet_Caption(Dataset):
     def __init__(
         self,
-        anno_path = "/data/hvw5451/data/activitynet/captions/val_1.json",
+        anno_path = "/data/hvw5451/data/activitynet/captions/train.json",
         video_path = '/data/hvw5451/data/activitynet/videos',
         num_frames = 96,
         num_segs = 12,
@@ -51,6 +51,9 @@ class ANet_Caption(Dataset):
         self.prompts = []
         self.answers = []
 
+        # save_files = []
+
+
         for key in self.data.keys():
             item = self.data[key]
             self.question_ids.append(key)
@@ -75,6 +78,16 @@ class ANet_Caption(Dataset):
             prompt = self.chat_template.encode(prompt_conv).replace(eos, '')
             self.answers.append(answer)
             self.prompts.append(prompt)
+
+        #     save_files.append(
+        #         {
+        #             'video_id': key,
+        #             'question_id': key,
+        #             'video_file': 'activitynet/videos/'+key+'.mp4',
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/data/hvw5451/data/mix_sft/activitynet-dense-caption.json')
 
     def __len__(self):
         return len(self.video_ids)

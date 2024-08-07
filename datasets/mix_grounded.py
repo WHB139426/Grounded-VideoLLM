@@ -98,22 +98,22 @@ class MixGrounded(Dataset):
             self.text_inputs.append(self.chat_template.encode(conversations))
             self.dataset_names.append('vtimellm-stage2')
 
-        for key in self.anet_data.keys():
-            item = self.anet_data[key]
-            self.question_ids.append(key)
-            self.video_files.append(key+'.mp4')
-            self.video_ids.append(key)
-            answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
-            if len(item['sentences']) >= 10:
-                instruction = random.choice(dense_caption_prompts_detail)
-            else:
-                instruction = random.choice(dense_caption_prompts_short)
-            conversations = [
-                {"from": "human", "value": "<image>\n"+instruction},
-                {"from": "gpt", "value": answer}
-            ]
-            self.text_inputs.append(self.chat_template.encode(conversations))
-            self.dataset_names.append('anet-caption')
+        # for key in self.anet_data.keys():
+        #     item = self.anet_data[key]
+        #     self.question_ids.append(key)
+        #     self.video_files.append(key+'.mp4')
+        #     self.video_ids.append(key)
+        #     answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
+        #     if len(item['sentences']) >= 10:
+        #         instruction = random.choice(dense_caption_prompts_detail)
+        #     else:
+        #         instruction = random.choice(dense_caption_prompts_short)
+        #     conversations = [
+        #         {"from": "human", "value": "<image>\n"+instruction},
+        #         {"from": "gpt", "value": answer}
+        #     ]
+        #     self.text_inputs.append(self.chat_template.encode(conversations))
+        #     self.dataset_names.append('anet-caption')
 
         for item in self.internvidg_data:
             video_id = item['video'].replace('.mp4','')
