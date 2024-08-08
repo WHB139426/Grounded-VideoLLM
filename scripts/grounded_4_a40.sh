@@ -7,7 +7,7 @@ CUDA_VISIBLE_DEVICES=0,5,6,7 torchrun --standalone --nnodes 1 --nproc-per-node 4
     --num_frames 96 \
     --num_segs 12 \
     --stage grounded \
-    --epoch 3 \
+    --epoch 1 \
     --lora \
     --lora_lr 2e-4 \
     --lr 2e-5 \
