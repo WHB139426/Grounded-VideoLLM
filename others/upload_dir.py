@@ -32,13 +32,27 @@ api = HfApi()
 # )
 
 dir_names = ['activitynet', 'clevrer', 'coin', 'DiDeMo', 'HiREST', 'internvid', 'InternVid-G', 'kinetics', 
-'mix_sft', 'Moment-10m', 'msrvttqa', 'msvdqa', 'nextqa', 'panda70m_2m', 'querYD', 'sharegpt4video', 'sthsthv2', 
+'Moment-10m', 'msrvttqa', 'msvdqa', 'nextqa', 'panda70m_2m', 'querYD', 'sharegpt4video', 'sthsthv2', 
 'TextVR', 'VideoChat_instruct', 'videochat2_conversations', 'videochat2_egoqa', 'vitt', 'VTG-IT',
  'vtimellm_stage2', 'webvid-703k', 'webvid-caption', 'webvid-qa', 'youcook2']
 
+sent_names = [
+    # "msvdqa", "msrvttqa", "videochat2_egoqa", "VideoChat_instruct", "videochat2_conversations", "nextqa", "TextVR",
+    # "clevrer", "kinetics", "querYD", "HiREST", "youcook2", "coin", "activitynet", "vitt", "sthsthv2", 
+    "InternVid-G", "DiDeMo", 
+]
+
 api.upload_folder(
-    folder_path=f"/data/hvw5451/data_zip/activitynet",
-    path_in_repo=f"./",
+    folder_path=f"/data/hvw5451/data/mix_sft",
+    path_in_repo=f"./mix_sft",
     repo_id=f"WHB139426/Grounded-VideoLLM",
     repo_type="dataset",
 )
+
+for key in sent_names:
+    api.upload_folder(
+        folder_path=f"/data/hvw5451/data_zip/{key}",
+        path_in_repo=f"./{key}",
+        repo_id=f"WHB139426/Grounded-VideoLLM",
+        repo_type="dataset",
+    )
