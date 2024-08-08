@@ -427,10 +427,20 @@ class LLAVA_NEXT_VIDEO(nn.Module):
         """
         segment features
         """
-        temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs (num_segs num_frames_per_seg) c h w -> bs num_segs num_frames_per_seg c h w', num_segs=num_segs)
-        temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs num_segs num_frames_per_seg c h w -> (bs num_segs) c num_frames_per_seg h w')
-        segment_features = self.video_encoder(temporal_pixel_values, None, False, x_vis_return_idx=-2, x_vis_only=True)[:, 1:, :] # [bs*num_segs, num_frames_per_seg*256, 1408]  
-        segment_features = einops.rearrange(segment_features, 'bs_num_segs (num_frames_per_seg hw) d -> bs_num_segs num_frames_per_seg hw d', num_frames_per_seg=num_frames_per_seg) # [bs*num_segs, num_frames_per_seg, 256, 1408] 
+        memroy_efficient = False
+        if not memroy_efficient:
+            temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs (num_segs num_frames_per_seg) c h w -> bs num_segs num_frames_per_seg c h w', num_segs=num_segs)
+            temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs num_segs num_frames_per_seg c h w -> (bs num_segs) c num_frames_per_seg h w')
+            segment_features = self.video_encoder(temporal_pixel_values, None, False, x_vis_return_idx=-2, x_vis_only=True)[:, 1:, :] # [bs*num_segs, num_frames_per_seg*256, 1408]  
+            segment_features = einops.rearrange(segment_features, 'bs_num_segs (num_frames_per_seg hw) d -> bs_num_segs num_frames_per_seg hw d', num_frames_per_seg=num_frames_per_seg) # [bs*num_segs, num_frames_per_seg, 256, 1408] 
+        else:
+            temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs (num_segs num_frames_per_seg) c h w -> bs num_segs num_frames_per_seg c h w', num_segs=num_segs)
+            temporal_pixel_values = einops.rearrange(temporal_pixel_values, 'bs num_segs num_frames_per_seg c h w -> bs num_segs c num_frames_per_seg h w')
+            segment_features = []
+            for i in range(temporal_pixel_values.shape[1]):
+                segment_features.append(self.video_encoder(temporal_pixel_values[:, i, :, :, :, :], None, False, x_vis_return_idx=-2, x_vis_only=True)[:, 1:, :])
+            segment_features = torch.stack(segment_features, dim=1).to(self.device) # [bs, num_segs, num_frames_per_seg*256, 1408] 
+            segment_features = einops.rearrange(segment_features, 'bs num_segs (num_frames_per_seg hw) d -> (bs num_segs) num_frames_per_seg hw d', num_frames_per_seg=num_frames_per_seg) # [bs*num_segs, num_frames_per_seg, 256, 1408] 
 
         # Aadptive Pooling for segment features
         frame_shape = (int(math.sqrt(segment_features.shape[2])), int(math.sqrt(segment_features.shape[2]))) # [16, 16] 
@@ -562,12 +572,12 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 # num_frames=96
 # num_segs=12
 # stage='grounded'
-# llm = 'vicuna'
+# llm = 'llama3'
 
 # from datasets.mix_grounded import MixGrounded
 # from torch.utils.data import Dataset, DataLoader
 # dataset = MixGrounded(llm=llm)
-# data_loader = DataLoader(dataset, batch_size=2, shuffle=False, drop_last=False, num_workers=4)
+# data_loader = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False, num_workers=4)
 
 # model = LLAVA_NEXT_VIDEO(dtype=dtype, stage=stage, num_frames=num_frames, num_segs=num_segs, llm=llm)
 # model.to(device)

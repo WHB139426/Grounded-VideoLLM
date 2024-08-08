@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0,7 torchrun --standalone --nnodes 1 --nproc-per-node 2 train.py \
+CUDA_VISIBLE_DEVICES=0,5,6,7 torchrun --standalone --nnodes 1 --nproc-per-node 4 train.py \
     --model llava_next_video \
     --llm llama3 \
     --dataset mix_pretrain \
@@ -13,5 +13,5 @@ CUDA_VISIBLE_DEVICES=0,7 torchrun --standalone --nnodes 1 --nproc-per-node 2 tra
     --warmup_ratio 0.03 \
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
-    --global_batch_size 256 \
-    --per_device_batch_size 4 
+    --global_batch_size 144 \
+    --per_device_batch_size 3 

@@ -57,18 +57,18 @@ from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 # save_json(mix_sft, '/home/haibo/data/mix_sft/mix_sft.json')
 
 
-missing = []
-video_nums = []
-data = load_json("/home/haibo/data/mix_sft/mix_sft.json")
-def filter_unexist(data, file_path='/home/haibo/data'):
-    for item in tqdm(data):
-        video_file_path = os.path.join(file_path, item['video_file'])
-        video_nums.append(video_file_path)
-        if not os.path.exists(video_file_path):
-            missing.append(item)
-            print(f"{video_file_path} not exist!!!!!!")
-    print("video_nums: ", len(list(set(video_nums))), "missing videos: ", len(list(set(missing))))
-filter_unexist(data)
+# missing = []
+# video_nums = []
+# data = load_json("/home/haibo/data/mix_sft/mix_sft.json")
+# def filter_unexist(data, file_path='/home/haibo/data'):
+#     for item in tqdm(data):
+#         video_file_path = os.path.join(file_path, item['video_file'])
+#         video_nums.append(video_file_path)
+#         if not os.path.exists(video_file_path):
+#             missing.append(item)
+#             print(f"{video_file_path} not exist!!!!!!")
+#     print("video_nums: ", len(list(set(video_nums))), "missing videos: ", len(list(set(missing))))
+# filter_unexist(data)
 
 
 class MixSFT(Dataset):

@@ -18,7 +18,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     # evaluation
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--eval_bs', type=int, default=4)
+    parser.add_argument('--eval_bs', type=int, default=1)
     parser.add_argument('--device', type=str, default='cuda:7')
     parser.add_argument('--dtype', type=torch.dtype, default=torch.bfloat16, choices=[torch.bfloat16, torch.float32])
 
