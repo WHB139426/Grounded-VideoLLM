@@ -30,15 +30,15 @@ def check_directory_for_corrupted_mp4s(directory):
     return corrupted_files
 
 
-# directory_to_check = '/home/haibo/data/DiDeMo/videos'  # 替换为你要检查的目录路径
-# corrupted_files = check_directory_for_corrupted_mp4s(directory_to_check)
+directory_to_check = '/home/haibo/data/videochat2_conversations/videos'  # 替换为你要检查的目录路径
+corrupted_files = check_directory_for_corrupted_mp4s(directory_to_check)
 
-# if corrupted_files:
-#     print(f"Found {len(corrupted_files)} corrupted MP4 files:")
-#     for file in corrupted_files:
-#         print(file)
-# else:
-#     print("No corrupted MP4 files found.")
+if corrupted_files:
+    print(f"Found {len(corrupted_files)} corrupted MP4 files:")
+    for file in corrupted_files:
+        print(file)
+else:
+    print("No corrupted MP4 files found.")
 
 
 

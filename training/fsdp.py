@@ -230,7 +230,18 @@ class FSDPStrategy(TrainingStrategy):
                 if self.args.lora:
                     groups.append(
                         {"params": lora, "weight_decay": 0.0, "lr": self.args.lora_lr},
-                    )     
+                    )
+            elif self.args.stage == 'sft':     
+                groups = [
+                    {"params": mm_proj, "weight_decay": 0.0, "lr": self.args.lr},
+                    {"params": video_proj, "weight_decay": 0.0, "lr": self.args.lr}, 
+                    {"params": lm_head, "weight_decay": 0.0, "lr": self.args.lr}, 
+                    {"params": embed_tokens, "weight_decay": 0.0, "lr": self.args.lr}, 
+                    ]      
+                if self.args.lora:
+                    groups.append(
+                        {"params": lora, "weight_decay": 0.0, "lr": self.args.lora_lr},
+                    )      
             else:
                 groups = [
                     {"params": decay, "weight_decay": self.weight_decay}, 

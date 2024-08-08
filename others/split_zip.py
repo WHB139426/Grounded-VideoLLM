@@ -1,6 +1,7 @@
 import os
 import zipfile
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def zipdir(path, ziph):
     # Zip the directory contents
@@ -30,7 +31,7 @@ def split_folder_into_zips(folder_path, output_dir, chunk_size=30*1024*1024*1024
     zip_index = 1
     
     # Create a progress bar
-    with tqdm(total=sum(file[1] for file in files), unit="B", unit_scale=True, desc="Compressing") as pbar:
+    with tqdm(total=sum(file[1] for file in files), unit="B", unit_scale=True, desc=f"Compressing {os.path.basename(folder_path)}") as pbar:
         for file_path, file_size in files:
             if current_zip is None or current_size + file_size > chunk_size:
                 if current_zip is not None:
@@ -47,12 +48,19 @@ def split_folder_into_zips(folder_path, output_dir, chunk_size=30*1024*1024*1024
     if current_zip is not None:
         current_zip.close()
 
+def compress_directory(dir_name):
+    input_dir = f"/home/haibo/data/{dir_name}"
+    output_dir = f"/data/hvw5451/data_zip/{dir_name}"
+    split_folder_into_zips(input_dir, output_dir)
 
-# Run the split function
-split_folder_into_zips("/home/haibo/data/Moment-10m/", "/home/haibo/data/Moment-10m/")
+# Run the split function using multiple threads
+dir_names = ['activitynet', 'clevrer', 'coin', 'DiDeMo', 'HiREST', 'internvid', 'InternVid-G', 'kinetics', 
+'mix_sft', 'Moment-10m', 'msrvttqa', 'msvdqa', 'nextqa', 'panda70m_2m', 'querYD', 'sharegpt4video', 'sthsthv2', 
+'TextVR', 'VideoChat_instruct', 'videochat2_conversations', 'videochat2_egoqa', 'vitt', 'VTG-IT',
+ 'vtimellm_stage2', 'webvid-703k', 'webvid-caption', 'webvid-qa', 'youcook2']
 
-
-
-
-# nohup python split_zip.py > split_zip.out 2>&1 &      2426037
-
+# Using ThreadPoolExecutor to parallelize the compression tasks
+with ThreadPoolExecutor(max_workers=64) as executor:
+    futures = [executor.submit(compress_directory, dir_name) for dir_name in dir_names]
+    for future in as_completed(futures):
+        future.result()  # To raise exceptions if any occurred

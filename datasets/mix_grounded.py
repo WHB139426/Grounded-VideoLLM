@@ -98,22 +98,22 @@ class MixGrounded(Dataset):
             self.text_inputs.append(self.chat_template.encode(conversations))
             self.dataset_names.append('vtimellm-stage2')
 
-        for key in self.anet_data.keys():
-            item = self.anet_data[key]
-            self.question_ids.append(key)
-            self.video_files.append(key+'.mp4')
-            self.video_ids.append(key)
-            answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
-            if len(item['sentences']) >= 10:
-                instruction = random.choice(dense_caption_prompts_detail)
-            else:
-                instruction = random.choice(dense_caption_prompts_short)
-            conversations = [
-                {"from": "human", "value": "<image>\n"+instruction},
-                {"from": "gpt", "value": answer}
-            ]
-            self.text_inputs.append(self.chat_template.encode(conversations))
-            self.dataset_names.append('anet-caption')
+        # for key in self.anet_data.keys():
+        #     item = self.anet_data[key]
+        #     self.question_ids.append(key)
+        #     self.video_files.append(key+'.mp4')
+        #     self.video_ids.append(key)
+        #     answer = self.convert_dense_captions(item['sentences'], item['timestamps'])
+        #     if len(item['sentences']) >= 10:
+        #         instruction = random.choice(dense_caption_prompts_detail)
+        #     else:
+        #         instruction = random.choice(dense_caption_prompts_short)
+        #     conversations = [
+        #         {"from": "human", "value": "<image>\n"+instruction},
+        #         {"from": "gpt", "value": answer}
+        #     ]
+        #     self.text_inputs.append(self.chat_template.encode(conversations))
+        #     self.dataset_names.append('anet-caption')
 
         for item in self.internvidg_data:
             video_id = item['video'].replace('.mp4','')
@@ -232,6 +232,7 @@ class MixGrounded(Dataset):
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
                 "dataset_names": dataset_name,
+                "durations": float(duration),
 
                 # "time_pos_left": time_pos_left,
                 # "time_pos_right": time_pos_right,
@@ -240,9 +241,9 @@ class MixGrounded(Dataset):
             }
 
 # dataset = MixGrounded(llm='llama3')
-# for i in range(100):
+# for i in range(50):
 #     entry = random.choice(dataset)
-#     print(entry['question_ids'], entry['video_ids'], entry['dataset_names'])
+#     print(entry['question_ids'], entry['video_ids'], entry['dataset_names'], entry['durations'])
 #     print("text_inputs: ",             entry['text_inputs'])
 #     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
 #     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)

@@ -7,6 +7,7 @@ from PIL import Image
 import pickle
 import sys
 import os
+import torch
 import requests
 from collections import Counter
 from io import BytesIO
@@ -17,36 +18,42 @@ from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
-# data = load_pkl('/home/haibo/data/msvdqa/raw-captions.pkl')
-# print(data['-4wsuPCjDBc_5_15'])
+def most_common_element(lst):
+    tuples = [tuple(sublist) for sublist in lst]
+    counter = Counter(tuples)
+    most_common = counter.most_common(1)[0][0]
+    return list(most_common)
 
-# with open('/home/haibo/data/msvdqa/train_list.txt', 'r') as f:
-#     reads = f.readlines() #txt中所有字符串读入data，得到的是一个list
-# test_ids = [r.replace('\n','') for r in reads]
+def filter_unexist(data, file_path='/home/haibo/data/DiDeMo/videos'):
+    exist_files = os.listdir(file_path)
+    fiter_files = []
+    for item in data:
+        video_id = item['video'].split('.')[0]
+        caption = item['description']
+        timestamp = most_common_element(item['times'])
+        if f'{video_id}.mp4' in exist_files:
+            fiter_files.append({
+                "video_id": video_id,
+                "caption": caption,
+                "timestamp": [timestamp[0]*5, timestamp[1]*5+5]
+            })
+    return fiter_files
 
-# new_data = []
-# for key in data.keys():
-#     if key in test_ids:
-#         captions = []
-#         for cap in data[key]:
-#             captions.append(' '.join(cap))
-#         new_data.append(
-#             {
-#                 'video_id': key,
-#                 'captions': captions
-#             }
-#         )
-# print(new_data[0], len(new_data))
-# save_json(new_data, '/home/haibo/data/msvdqa/train_captions.json')
+# data = load_json('/home/haibo/data/DiDeMo/train_data.json')
+# filter_data = filter_unexist(data)
+# print(len(data), len(filter_data))
+# print(filter_data[0])
+# save_json(filter_data, '/home/haibo/data/DiDeMo/filter_train.json')
 
-class MSVD_Caption(Dataset):
+
+class DiDeMo(Dataset):
     def __init__(
         self,
-        video_path = "/home/haibo/data/msvdqa/videos",
-        anno_path = '/home/haibo/data/msvdqa/train_captions.json',
-        num_frames = 128,
-        num_segs = 16,
-        num_temporal_tokens = 500,
+        anno_path = "/home/haibo/data/DiDeMo/filter_train.json",
+        video_path = '/home/haibo/data/DiDeMo/videos',
+        num_frames = 96,
+        num_segs = 12,
+        num_temporal_tokens = 300,
         sample='rand',
         llm='llama3',
     ):
@@ -61,61 +68,65 @@ class MSVD_Caption(Dataset):
             self.chat_template = LLaMA3_Template()
         elif llm == 'vicuna':
             self.chat_template = Vicuna_Template()
-            
+
         self.video_processor = frame_transform(image_size=224, mean=INTERNVIDEO_MEAN, std=INTERNVIDEO_STD)
         self.image_processor = frame_transform(image_size=336, mean=OPENAI_DATASET_MEAN, std=OPENAI_DATASET_STD)
 
         self.video_ids = []
         self.question_ids = []
         self.video_files = []
-        self.prompts = []
-        self.answers = []
+        self.text_inputs = []
 
-        save_files = []
+        # save_files = []
+
 
         for item in self.data:
-    
             self.question_ids.append(item['video_id'])
-            self.video_files.append(item['video_id']+'.avi')
+            self.video_files.append(item['video_id']+'.mp4')
             self.video_ids.append(item['video_id'])
-            self.answers.append(item['captions'][0]+'.')
+            caption = item['caption']
+            start_time = item['timestamp'][0]
+            end_time = item['timestamp'][1]
+            answer = f'From <{start_time}> to <{end_time}>.'
+            instruction = random.choice(sft_vtg_two_end_prompts).replace("<query_placeholder>", f"'{caption}'")
 
-            prompt_conversations = [
-            {"from": "human", "value": "<image>\n"+"Describe the following video concisely."},
-            {"from": "gpt", "value": ''}
+            conversations = [
+                {"from": "human", "value": "<image>\n"+instruction},
+                {"from": "gpt", "value": answer}
             ]
-            sep, eos = self.chat_template.separator.apply()
-            prompt = self.chat_template.encode(prompt_conversations).replace(eos, '')
-            self.prompts.append(prompt)
-
-        #     answer = random.choice(item['captions'])
-        #     answer = answer[0].upper() + answer[1:] + '.'
-        #     conversations = [
-        #     {"from": "human", "value": "<image>\n"+random.choice(short_caption_prompts)},
-        #     {"from": "gpt", "value": answer}
-        #     ]
+            self.text_inputs.append(self.chat_template.encode(conversations))
 
         #     save_files.append(
         #         {
         #             'video_id': item['video_id'],
         #             'question_id': item['video_id'],
-        #             'video_file': 'msvdqa/videos/'+item['video_id']+'.avi',
+        #             'video_file': 'DiDeMo/videos/'+item['video_id']+'.mp4',
         #             'conversation': conversations
         #         }
         #     )
-        # save_json(save_files, '/home/haibo/data/mix_sft/msvd_caption.json')
+        # save_json(save_files, '/home/haibo/data/mix_sft/DiDeMo.json')
 
     def __len__(self):
-        """returns the length of dataframe"""
         return len(self.video_ids)
+
+    def convert_time_position(self, answer, duration):
+        # 定义一个函数，将匹配到的浮点数转换为整数
+        def replace_float(match):
+            time = float(match.group(1))
+            quantized_time = int(self.num_temporal_tokens * time / duration)
+            return f'<{quantized_time}>'
+        # 使用正则表达式匹配所有的浮点数时间戳
+        pattern = r'<(\d+\.\d+)>'
+        # 替换匹配到的浮点数时间戳
+        new_answer = re.sub(pattern, replace_float, answer)
+        return new_answer
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
         video_id = str(self.video_ids[index])
         question_id = str(self.question_ids[index])
-        prompt = self.prompts[index]
+        text_input = self.text_inputs[index]
         video_file = str(self.video_files[index])
-        answer = str(self.answers[index])
 
         pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
             video_path = os.path.join(self.video_path, video_file),
@@ -138,19 +149,19 @@ class MSVD_Caption(Dataset):
         return {
                 "video_ids": video_id,
                 "question_ids": question_id,
-                "prompts": prompt,
-                "answers": answer,
+                "text_inputs": self.convert_time_position(text_input, duration),
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
+                "durations": float(duration),
             }
 
-
-# dataset = MSVD_Caption()
-# for i in range(10):
-#     sample = random.choice(dataset)
-#     print("video_ids: ", sample['video_ids'], "question_ids: ", sample['question_ids'])
-#     print(sample['temporal_pixel_values'].shape, sample['spatial_pixel_values'].shape)
-#     print("prompts: ", sample['prompts'])
-#     print("answers: ", sample['answers'])
+# dataset = DiDeMo()
+# for i in range(50):
+#     entry = random.choice(dataset)
+#     print(entry['question_ids'], entry['video_ids'])
+#     print("text_inputs: ",             entry['text_inputs'])
+#     print("durations: ",             entry['durations'])
+#     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
+#     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))

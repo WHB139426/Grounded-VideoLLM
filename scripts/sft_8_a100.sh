@@ -1,0 +1,19 @@
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-per-node 8 train.py \
+    --model llava_next_video \
+    --llm llama3 \
+    --dataset mix_sft \
+    --max_txt_len 4096 \
+    --num_temporal_tokens 300 \
+    --num_frames 96 \
+    --num_segs 12 \
+    --stage sft \
+    --epoch 1 \
+    --lora \
+    --lora_lr 2e-4 \
+    --lr 2e-5 \
+    --warmup_ratio 0.03 \
+    --lr_scheduler_type linear-warmup+cosine-decay \
+    --sharding_strategy full-shard \
+    --global_batch_size 128 \
+    --per_device_batch_size 4 \
+    --pretrained_proj /home/haibo/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth

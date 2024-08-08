@@ -18,9 +18,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     # evaluation
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--eval_bs', type=int, default=1)
-    parser.add_argument('--device', type=str, default='cuda:3')
-    parser.add_argument('--dtype', type=torch.dtype, default=torch.float16, choices=[torch.bfloat16, torch.float32])
+    parser.add_argument('--eval_bs', type=int, default=4)
+    parser.add_argument('--device', type=str, default='cuda:7')
+    parser.add_argument('--dtype', type=torch.dtype, default=torch.bfloat16, choices=[torch.bfloat16, torch.float32])
 
     # model && dataset
     parser.add_argument('--dataset', type=str, default='anet_grounding', choices=['msrvtt_caption', 'msvd_caption', 'anet_caption', 'charades_sta', 'qvhighlights', 'anet_grounding'])
@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument('--lora', type=bool, default=True)
 
     # generation
-    parser.add_argument('--do_sample', type=bool, default=True)
+    parser.add_argument('--do_sample', type=bool, default=False)
     parser.add_argument('--num_beams', type=int, default=1)
     parser.add_argument('--max_new_tokens', type=int, default=2048)
     parser.add_argument('--temperature', type=float, default=0.2)
@@ -92,8 +92,10 @@ def eval(args, val_dataset, model):
                     "durations": float(data['durations'][i]) if 'durations' in data.keys() else 'N/A.',
                 }
             )
-
-        save_json(acc_records, f'./experiments/acc_records_{args.dataset}_{args.stage}.json')
+        print(acc_records[-1]['prompts'])
+        print(acc_records[-1]['pred_texts'])
+        print(acc_records[-1]['answers'])
+        # save_json(acc_records, f'./experiments/acc_records_{args.dataset}_{args.stage}.json')
 
 
 

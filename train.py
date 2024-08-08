@@ -12,6 +12,7 @@ from mm_utils.utils import *
 
 # nohup bash scripts/pretrain_8_a100.sh > pretrain_8_a100.out 2>&1 &  3269779
 # nohup bash scripts/grounded_8_a100.sh > grounded_8_a100.out 2>&1 &  1173215
+# nohup bash scripts/test.sh > grounded_2_a100.out 2>&1 &  1173215
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -21,7 +22,7 @@ def parse_args():
     parser.add_argument('--model', type=str, default='llava_next_video', choices=['llava_next_video'])
     parser.add_argument('--llm', type=str, default='llama3', choices=['llama3', 'vicuna'])
 
-    parser.add_argument('--dataset', type=str, default='mix_pretrain', choices=['mix_pretrain', 'mix_grounded'])
+    parser.add_argument('--dataset', type=str, default='mix_pretrain', choices=['mix_pretrain', 'mix_grounded', 'mix_sft'])
     parser.add_argument('--max_txt_len', type=int, default=2048)
     parser.add_argument('--num_temporal_tokens', type=int, default=300)
     parser.add_argument('--num_frames', type=int, default=96)
@@ -101,6 +102,11 @@ def pretrain(args) -> None:
             ckpt = torch.load(args.pretrained_proj, map_location='cpu')['model']
             model.multi_modal_projector.load_state_dict(ckpt['multi_modal_projector'])
             model.video_projecter.load_state_dict(ckpt['video_projecter'])
+        elif args.stage=='sft' and len(args.pretrained_proj) > 0:
+            ckpt = torch.load(args.pretrained_proj, map_location='cpu')['model']
+            model.multi_modal_projector.load_state_dict(ckpt['multi_modal_projector'])
+            model.video_projecter.load_state_dict(ckpt['video_projecter'])
+            model.language_model.load_state_dict(ckpt['language_model'])    
 
     if overwatch.is_rank_zero():
         print(get_parameter_number(model))
@@ -133,6 +139,17 @@ def pretrain(args) -> None:
         anet_video_path = '/home/haibo/data/activitynet/videos',
         internvidg_anno_path = "/home/haibo/data/InternVid-G/simplified_filter_train.json",
         internvidg_video_path = '/home/haibo/data/InternVid-G/videos',
+        num_frames = args.num_frames,
+        num_segs = args.num_segs,
+        num_temporal_tokens = args.num_temporal_tokens,
+        sample='rand',
+        llm=args.llm,
+        )
+    elif args.dataset == 'mix_sft':
+        from datasets.mix_sft import MixSFT
+        train_dataset = MixSFT(
+        anno_path = "/home/haibo/data/mix_sft/mix_sft.json",
+        video_path = "/home/haibo/data",
         num_frames = args.num_frames,
         num_segs = args.num_segs,
         num_temporal_tokens = args.num_temporal_tokens,

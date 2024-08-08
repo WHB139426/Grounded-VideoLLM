@@ -153,6 +153,13 @@ class LLAVA_NEXT_VIDEO(nn.Module):
                 print("LORA llm")
                 self.lora_model()
 
+            print("Frozen Part LLM")
+            for name, param in self.language_model.named_parameters():
+                if 'lm_head' in name or 'embed_tokens' in name or 'lora' in name:
+                    param.requires_grad = True
+                else:
+                    param.requires_grad = False
+
             self.trainable_module_keys = ["multi_modal_projector", "video_projecter", "language_model"]  
         
     def lora_model(self,):
@@ -215,6 +222,8 @@ class LLAVA_NEXT_VIDEO(nn.Module):
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy_embedding()
         elif self.stage=='pretrain':
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
+        elif self.stage == 'sft':
+            llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy_embedding()
         else:
             llm_fsdp_wrapping_policy = self.language_model.get_fsdp_wrapping_policy()
 
@@ -547,7 +556,7 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 
         return output_text
 
-# device = "cuda:3"
+# device = "cuda:7"
 # # device = "cpu"
 # dtype = torch.float32 if device == 'cpu' else torch.bfloat16
 # num_frames=96
@@ -580,10 +589,6 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 #             "prompts": [prompt for i in range(len(data['text_inputs']))],
 #             "temporal_pixel_values":data['temporal_pixel_values'].to(device),
 #             "spatial_pixel_values": data['spatial_pixel_values'].to(device),
-#             "time_pos_left": data['time_pos_left'],
-#             "time_pos_right": data['time_pos_right'],
-#             "coefficient_left": data['coefficient_left'].to(device),
-#             "coefficient_right": data['coefficient_right'].to(device),
 #         }
 #     loss = model(samples)
 #     print(loss)

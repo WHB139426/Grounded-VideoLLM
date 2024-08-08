@@ -11,21 +11,42 @@ import requests
 from collections import Counter
 from io import BytesIO
 import json
+import numpy as np
 import cv2
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from mm_utils.utils import *
 from mm_utils.video_utils import read_frames_decord, read_frames_av
 from datasets.chat.base_template import LLaMA3_Template, Vicuna_Template
 
+def get_mp4_files(directory):
+    mp4_files = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".mp4"):
+                mp4_files.append(os.path.join(root, file))
+    return mp4_files
 
-class MSRVTT_Caption(Dataset):
+def filter_unexist(data, file_path='/home/haibo/data/webvid-qa/videos'):
+    exist_files = get_mp4_files(file_path)
+    fiter_files = []
+    for item in tqdm(data):
+        video_id = item['video']
+        if file_path+'/'+video_id in exist_files:
+            fiter_files.append(item)
+    return fiter_files
+
+# data = load_json('/home/haibo/data/webvid-qa/filtered_train.json')
+# fiter_files = filter_unexist(data)
+# print(len(data), len(fiter_files))
+
+class WebVid_QA(Dataset):
     def __init__(
         self,
-        video_path = "/home/haibo/data/msrvttqa/videos",
-        anno_path = '/home/haibo/data/msrvttqa/train_val_videodatainfo.json',
+        video_path = "/home/haibo/data/webvid-qa/videos",
+        anno_path = '/home/haibo/data/webvid-qa/filtered_train.json',
         num_frames = 128,
         num_segs = 16,
-        num_temporal_tokens = 500,
+        num_temporal_tokens = 300,
         sample='rand',
         llm='llama3',
     ):
@@ -35,7 +56,7 @@ class MSRVTT_Caption(Dataset):
         self.num_temporal_tokens = num_temporal_tokens
         self.sample = sample
 
-        self.data = load_json(anno_path)['sentences']
+        self.data = load_json(anno_path)
         if llm == 'llama3':
             self.chat_template = LLaMA3_Template()
         elif llm == 'vicuna':
@@ -47,55 +68,46 @@ class MSRVTT_Caption(Dataset):
         self.video_ids = []
         self.question_ids = []
         self.video_files = []
-        self.prompts = []
-        self.answers = []
+        self.text_inputs = []
 
         save_files = []
 
         for item in self.data:
-            if item['video_id'] not in self.video_ids:
-                self.question_ids.append(item['sen_id'])
-                self.video_files.append(item['video_id']+'.mp4')
-                self.video_ids.append(item['video_id'])
-                self.answers.append(item['caption']+'.')
+            self.question_ids.append(item['video'].replace('.mp4',''))
+            self.video_files.append(item['video'])
+            self.video_ids.append(item['video'].replace('.mp4',''))
+            conversations = []
+            for i in range(len(item['QA'])):
+                if item['QA'][i]['q'] == '':
+                    conversations.append({"from": "human", "value": item['QA'][i]['i']})
+                elif item['QA'][i]['i'] == '':
+                    conversations.append({"from": "human", "value": item['QA'][i]['q']})
+                else:
+                    conversations.append({"from": "human", "value": item['QA'][i]['i'] + ' ' + item['QA'][i]['q']})
+                conversations.append({"from": "gpt", "value": item['QA'][i]['a']})
+            conversations[0]['value'] = "<image>\n" + conversations[0]['value']
 
-                prompt_conversations = [
-                {"from": "human", "value": "<image>\n"+"Describe the following video concisely."},
-                {"from": "gpt", "value": ''}
-                ]
-                sep, eos = self.chat_template.separator.apply()
-                prompt = self.chat_template.encode(prompt_conversations).replace(eos, '')
-                self.prompts.append(prompt)
+            self.text_inputs.append(self.chat_template.encode(conversations))
 
-        #         answer = item['caption']
-        #         answer = answer[0].upper() + answer[1:] + '.'
-        #         conversations = [
-        #         {"from": "human", "value": "<image>\n"+random.choice(short_caption_prompts)},
-        #         {"from": "gpt", "value": answer}
-        #         ]
-
-        #         save_files.append(
-        #             {
-        #                 'video_id': item['video_id'],
-        #                 'question_id': item['video_id'],
-        #                 'video_file': 'msrvttqa/videos/'+item['video_id']+'.mp4',
-        #                 'conversation': conversations
-        #             }
-        #         )
-        # save_json(save_files, '/home/haibo/data/mix_sft/msrvtt_caption.json')
-
+        #     save_files.append(
+        #         {
+        #             'video_id': item['video'].replace('.mp4', ''),
+        #             'question_id': item['video'].replace('.mp4', ''),
+        #             'video_file': 'webvid-qa/videos/'+item['video'],
+        #             'conversation': conversations
+        #         }
+        #     )
+        # save_json(save_files, '/home/haibo/data/mix_sft/webvid-qa.json')
 
     def __len__(self):
-        """returns the length of dataframe"""
         return len(self.video_ids)
 
     def __getitem__(self, index):
         """return the input ids, attention masks and target ids"""
         video_id = str(self.video_ids[index])
         question_id = str(self.question_ids[index])
-        prompt = self.prompts[index]
+        text_input = self.text_inputs[index]
         video_file = str(self.video_files[index])
-        answer = str(self.answers[index])
 
         pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
             video_path = os.path.join(self.video_path, video_file),
@@ -118,19 +130,17 @@ class MSRVTT_Caption(Dataset):
         return {
                 "video_ids": video_id,
                 "question_ids": question_id,
-                "prompts": prompt,
-                "answers": answer,
+                "text_inputs": text_input,
                 "temporal_pixel_values": temporal_pixel_values,
                 "spatial_pixel_values": spatial_pixel_values,
             }
 
-
-# dataset = MSRVTT_Caption()
+# dataset = WebVid_QA()
 # for i in range(10):
-#     sample = random.choice(dataset)
-#     print("video_ids: ", sample['video_ids'], "question_ids: ", sample['question_ids'])
-#     print(sample['temporal_pixel_values'].shape, sample['spatial_pixel_values'].shape)
-#     print("prompts: ", sample['prompts'])
-#     print("answers: ", sample['answers'])
+#     entry = random.choice(dataset)
+#     print(entry['question_ids'], entry['video_ids'])
+#     print("text_inputs: ",             entry['text_inputs'])
+#     print("temporal_pixel_values: ",             entry['temporal_pixel_values'].shape)
+#     print("spatial_pixel_values: ",             entry['spatial_pixel_values'].shape)
 #     print()
 # print(len(dataset))
