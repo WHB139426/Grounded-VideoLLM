@@ -104,6 +104,8 @@ class LLAVA_NEXT_VIDEO(nn.Module):
             self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False, attn_implementation="flash_attention_2")
 
         self.all_module_keys = ["vision_tower", "language_model", "video_encoder", "multi_modal_projector", "video_projecter"]
+        self.old_num_tokens = 0
+        self.new_num_tokens = 0
 
         if self.stage == 'pretrain':
             print("Frozen vision_tower")
@@ -191,6 +193,9 @@ class LLAVA_NEXT_VIDEO(nn.Module):
         average_embedding = torch.mean(embedding_layer.weight, dim=0)
 
         old_num_tokens, old_embedding_dim = embedding_layer.weight.shape
+
+        self.old_num_tokens = old_num_tokens
+        self.new_num_tokens = num_new_tokens
         
         new_embeddings = nn.Embedding(old_num_tokens + num_new_tokens, old_embedding_dim)
         new_embeddings.to(embedding_layer.weight.device, dtype=embedding_layer.weight.dtype)
