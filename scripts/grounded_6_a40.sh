@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5 torchrun --standalone --nnodes 1 --nproc-per-node 6 train.py \
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes 1 --nproc-per-node 4 train.py \
     --model llava_next_video \
     --llm llama3 \
     --dataset mix_grounded \
@@ -14,6 +14,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5 torchrun --standalone --nnodes 1 --nproc-per-no
     --warmup_ratio 0.03 \
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
-    --global_batch_size 108 \
-    --per_device_batch_size 3 \
+    --global_batch_size 192 \
+    --per_device_batch_size 2 \
     --pretrained_proj /home/haibo/weights/ckpt/fsdp_pretrain_llava_next_video_mix_pretrain_multi_modal_projector_video_projecter.pth

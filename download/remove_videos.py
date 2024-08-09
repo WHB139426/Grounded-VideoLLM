@@ -6,7 +6,7 @@ def find_and_delete_empty_files(directory):
             file_path = os.path.join(root, file)
             if os.path.getsize(file_path) == 0:
                 empty_files.append(file_path)
-                os.remove(file_path)
+                # os.remove(file_path)
                 print(f"Deleted: {file_path}")
     return empty_files
 
@@ -22,7 +22,7 @@ def find_and_delete_empty_files(directory):
 '/data3/whb/data/DiDeMo/videos'
 """
 # 示例使用
-directory_path = '/home/haibo/data/videochat2_conversations/videos'
+directory_path = '/home/haibo/data/InternVid-G/videos'
 
 empty_files = find_and_delete_empty_files(directory_path)
 

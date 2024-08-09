@@ -14,6 +14,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-pe
     --warmup_ratio 0.03 \
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
-    --global_batch_size 120 \
+    --global_batch_size 192 \
     --per_device_batch_size 3 \
     --pretrained_proj /home/haibo/weights/ckpt/fsdp_pretrain_llava_next_video_mix_pretrain_multi_modal_projector_video_projecter.pth

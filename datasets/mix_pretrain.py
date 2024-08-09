@@ -119,11 +119,19 @@ class MixPretrain(Dataset):
         elif dataset_name == 'internvid':
             video_path = os.path.join(self.internvid_video_path, video_file)
 
-        pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
-            video_path = video_path,
-            num_frames = self.num_frames,
-            sample = self.sample,
-        )
+        try:
+            pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
+                video_path = video_path,
+                num_frames = self.num_frames,
+                sample = self.sample,
+            )
+        except Exception:
+            print(f"ERROR: {dataset_name}, {question_id}, {video_id}, {video_file}, {text_input}")
+            pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
+                video_path = '/home/haibo/data/msrvttqa/video0.mp4',
+                num_frames = self.num_frames,
+                sample = self.sample,
+            )
 
         temporal_pixel_values = []
         for i in range(pixel_values.shape[0]): 
