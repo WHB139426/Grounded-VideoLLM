@@ -1,19 +1,17 @@
 CUDA_VISIBLE_DEVICES=0,7 torchrun --standalone --nnodes 1 --nproc-per-node 2 train.py \
     --model llava_next_video \
     --llm llama3 \
-    --dataset mix_sft \
+    --dataset mix_pretrain \
     --max_txt_len 2048 \
     --num_temporal_tokens 300 \
     --num_frames 96 \
     --num_segs 12 \
-    --stage sft \
+    --stage pretrain \
     --epoch 1 \
-    --lora \
-    --lora_lr 2e-4 \
-    --lr 2e-5 \
+    --mm_proj_lr 1e-5 \
+    --lr 1e-3 \
     --warmup_ratio 0.03 \
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
-    --global_batch_size 128 \
-    --per_device_batch_size 2 \
-    --pretrained_proj /data/hvw5451/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth
+    --global_batch_size 192 \
+    --per_device_batch_size 6 

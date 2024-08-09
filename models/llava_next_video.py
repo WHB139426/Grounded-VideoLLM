@@ -99,9 +99,9 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 
         print("loading language_model")
         if self.llm == 'llama3':
-            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False, attn_implementation="flash_attention_2")
         elif self.llm == 'vicuna':
-            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/data/hvw5451/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False, attn_implementation="flash_attention_2")
 
         self.all_module_keys = ["vision_tower", "language_model", "video_encoder", "multi_modal_projector", "video_projecter"]
 
