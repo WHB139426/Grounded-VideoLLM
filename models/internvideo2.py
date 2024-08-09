@@ -21,6 +21,9 @@ from einops import rearrange
 
 logger = logging.getLogger(__name__)
 
+# from flash_attn.modules.mlp import FusedMLP
+# from flash_attn.ops.rms_norm import DropoutAddRMSNorm
+
 
 # --------------------------------------------------------
 # 3D sine-cosine position embedding
@@ -462,7 +465,78 @@ class LayerScale(nn.Module):
             out = x.mul_(self.gamma) if self.inplace else x * self.gamma
             return out
 
+import torch
+import torch.nn as nn
 
+from einops import rearrange
+
+from flash_attn.flash_attn_interface import flash_attn_varlen_qkvpacked_func
+from flash_attn.bert_padding import unpad_input, pad_input
+
+
+class FlashAttention(nn.Module):
+    """Implement the scaled dot product attention with softmax.
+    Arguments
+    ---------
+        softmax_scale: The temperature to use for the softmax attention.
+                      (default: 1/sqrt(d_keys) where d_keys is computed at
+                      runtime)
+        attention_dropout: The dropout rate to apply to the attention
+                           (default: 0.0)
+    """
+
+    def __init__(self, softmax_scale=None, attention_dropout=0.0, device=None, dtype=None):
+        super().__init__()
+        self.softmax_scale = softmax_scale
+        self.dropout_p = attention_dropout
+
+    def forward(self, qkv, key_padding_mask=None, causal=False, cu_seqlens=None,
+                max_s=None, need_weights=False):
+        """Implements the multihead softmax attention.
+        Arguments
+        ---------
+            qkv: The tensor containing the query, key, and value. (B, S, 3, H, D) if key_padding_mask is None
+                if unpadded: (nnz, 3, h, d)
+            key_padding_mask: a bool tensor of shape (B, S)
+        """
+        assert not need_weights
+        assert qkv.dtype in [torch.float16, torch.bfloat16]
+        assert qkv.is_cuda
+
+        if cu_seqlens is None:
+            batch_size = qkv.shape[0]
+            seqlen = qkv.shape[1]
+            if key_padding_mask is None:
+                qkv = rearrange(qkv, 'b s ... -> (b s) ...')
+                max_s = seqlen
+                cu_seqlens = torch.arange(0, (batch_size + 1) * seqlen, step=seqlen, dtype=torch.int32,
+                                          device=qkv.device)
+                output = flash_attn_varlen_qkvpacked_func(
+                    qkv, cu_seqlens, max_s, self.dropout_p if self.training else 0.0,
+                    softmax_scale=self.softmax_scale, causal=causal
+                )
+                output = rearrange(output, '(b s) ... -> b s ...', b=batch_size)
+            else:
+                nheads = qkv.shape[-2]
+                x = rearrange(qkv, 'b s three h d -> b s (three h d)')
+                x_unpad, indices, cu_seqlens, max_s = unpad_input(x, key_padding_mask)
+                x_unpad = rearrange(x_unpad, 'nnz (three h d) -> nnz three h d', three=3, h=nheads)
+                output_unpad = flash_attn_varlen_qkvpacked_func(
+                    x_unpad, cu_seqlens, max_s, self.dropout_p if self.training else 0.0,
+                    softmax_scale=self.softmax_scale, causal=causal
+                )
+                output = rearrange(pad_input(rearrange(output_unpad, 'nnz h d -> nnz (h d)'),
+                                             indices, batch_size, seqlen),
+                                   'b s (h d) -> b s h d', h=nheads)
+        else:
+            assert max_s is not None
+            output = flash_attn_varlen_qkvpacked_func(
+                qkv, cu_seqlens, max_s, self.dropout_p if self.training else 0.0,
+                softmax_scale=self.softmax_scale, causal=causal
+            )
+
+        return output, None
+    
 class Attention(nn.Module):
     def __init__(self, dim, num_heads=8, qkv_bias=False, attn_drop=0., proj_drop=0., use_flash_attn=False,
                  causal=False, norm_layer=nn.LayerNorm, qk_normalization=False, use_fused_rmsnorm=False):
@@ -583,7 +657,10 @@ class Block(nn.Module):
 
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
-        self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
+        if use_fused_mlp:
+            self.mlp = FusedMLP(in_features=dim, hidden_features=mlp_hidden_dim, heuristic=fused_mlp_heuristic)
+        else:
+            self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
         self.ls2 = LayerScale(dim, init_values=init_values,
                               force_fp32=(not layerscale_no_force_fp32)) if init_values else nn.Identity()
         self.drop_path2 = DropPath(drop_path) if drop_path > 0. else nn.Identity()
@@ -724,7 +801,7 @@ class PretrainInternVideo2(nn.Module):
 
         self.num_frames = num_frames
         self.tubelet_size = tubelet_size
-        assert use_flash_attn == use_fused_rmsnorm == use_fused_mlp, 'use_flash_attn, use_fused_rmsnorm and use_fused_mlp should be consistent'
+        # assert use_flash_attn == use_fused_rmsnorm == use_fused_mlp, 'use_flash_attn, use_fused_rmsnorm and use_fused_mlp should be consistent'
 
         self.use_flash_attn = use_flash_attn
         self.embed_dim = embed_dim
@@ -737,7 +814,11 @@ class PretrainInternVideo2(nn.Module):
         # logger.info(f'Normalization Type: {clip_norm_type}')
         # logger.info(f'Strudent Return Index: {self.return_index}')
 
-
+        if use_fused_rmsnorm:
+            norm_layer_for_blocks = partial(DropoutAddRMSNorm, eps=1e-6, prenorm=True)
+        else:
+            norm_layer_for_blocks = partial(RMSNorm, eps=1e-6)
+            
         norm_layer_for_blocks = partial(RMSNorm, eps=1e-6)
         self.norm_layer_for_blocks = norm_layer_for_blocks
         self.patch_embed = PatchEmbed(
@@ -1014,7 +1095,7 @@ def pretrain_internvideo2_1b_patch14_224(num_frames):
         drop_path_rate=0.25,
         init_values=0.00001,
         qk_normalization=True,
-        use_flash_attn=False,
+        use_flash_attn=True,
         use_fused_rmsnorm=False,
         use_fused_mlp=False,
         fused_mlp_heuristic=1,

@@ -14,4 +14,4 @@ CUDA_VISIBLE_DEVICES=0,7 torchrun --standalone --nnodes 1 --nproc-per-node 2 tra
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
     --global_batch_size 192 \
-    --per_device_batch_size 6 
+    --per_device_batch_size 8 
