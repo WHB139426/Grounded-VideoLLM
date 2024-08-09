@@ -2,7 +2,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-pe
     --model llava_next_video \
     --llm llama3 \
     --dataset mix_sft \
-    --max_txt_len 4096 \
+    --max_txt_len 2048 \
     --num_temporal_tokens 300 \
     --num_frames 96 \
     --num_segs 12 \

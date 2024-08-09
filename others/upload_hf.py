@@ -19,10 +19,15 @@ def delete_zip_files(directory):
 login()
 api = HfApi()
 
+dir_names = ['activitynet', 'clevrer', 'coin', 'DiDeMo', 'HiREST', 'internvid', 'InternVid-G', 'kinetics', 
+'Moment-10m', 'msrvttqa', 'msvdqa', 'nextqa', 'panda70m_2m', 'querYD', 'sharegpt4video', 'sthsthv2', 
+'TextVR', 'VideoChat_instruct', 'videochat2_conversations', 'videochat2_egoqa', 'vitt', 'VTG-IT',
+ 'vtimellm_stage2', 'webvid-703k', 'webvid-caption', 'webvid-qa', 'youcook2']
+ 
 dir_names = [
     # "msvdqa", "msrvttqa", "videochat2_egoqa", "VideoChat_instruct", "videochat2_conversations", "nextqa", "TextVR",
-    # "clevrer", "kinetics", "querYD", "HiREST",  "youcook2", "coin", "activitynet", "vitt", "sthsthv2", "DiDeMo", "InternVid-G", "panda70m_2m", "vtimellm_stage2", "VTG-IT", 
-    "webvid-703k", "webvid-qa", "webvid-caption", "sharegpt4video", "Moment-10m"
+    # "clevrer", "kinetics", "querYD", "HiREST",  "youcook2", "coin", "activitynet", "vitt", "sthsthv2", "DiDeMo", "InternVid-G", "panda70m_2m", "vtimellm_stage2", "VTG-IT", "webvid-703k", "webvid-qa", 
+    "webvid-caption", "sharegpt4video", "Moment-10m"
      
 ]
 for dir_name in dir_names:
