@@ -1,0 +1,375 @@
+nohup: ignoring input
+[2024-08-09 06:16:07,077] torch.distributed.run: [WARNING] master_addr is only used for static rdzv_backend and when rdzv_endpoint is not specified.
+[2024-08-09 06:16:07,077] torch.distributed.run: [WARNING] 
+[2024-08-09 06:16:07,077] torch.distributed.run: [WARNING] *****************************************
+[2024-08-09 06:16:07,077] torch.distributed.run: [WARNING] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+[2024-08-09 06:16:07,077] torch.distributed.run: [WARNING] *****************************************
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+loading vision_tower
+loading vision_tower
+loading vision_tower
+loading vision_tower
+Namespace(seed=42, model='llava_next_video', llm='llama3', dataset='mix_sft', max_txt_len=2048, num_temporal_tokens=300, num_frames=96, num_segs=12, stage='sft', lora=True, sharding_strategy='full-shard', epoch=1, lora_lr=0.0002, mm_proj_lr=1e-05, lr=2e-05, global_batch_size=144, per_device_batch_size=6, warmup_ratio=0.03, lr_scheduler_type='linear-warmup+cosine-decay', save_dir='/data/hvw5451/weights/ckpt', pretrained_proj='/data/hvw5451/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth')
+08/09 [06:16:12] INFO     | >> [*] VLM Training :: Gathering Light   train.py:71
+                 INFO     | >>     |=> "Life is like a prism; what   train.py:78
+                          you see depends on how you turn the                   
+                          glass."                                               
+                 INFO     | >> [*] Instantiating VLM                 train.py:82
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+/data/hvw5451/miniconda3/envs/grounded-videollm/lib/python3.9/site-packages/transformers/models/llava/configuration_llava.py:103: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect
+  warnings.warn(
+loading vision_tower
+loading vision_tower
+loading vision_tower
+loading vision_tower
+loading video_encoder
+loading video_encoder
+loading video_encoder
+loading video_encoder
+loading video_encoder
+loading video_encoder
+loading video_encoder
+loading video_encoder
+08/09 [06:16:30] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+08/09 [06:16:30] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+08/09 [06:16:31] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+08/09 [06:16:31] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+08/09 [06:16:31] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+loading multi_modal_projector
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+loading multi_modal_projector
+08/09 [06:16:31] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+loading video_projector
+loading video_projector
+08/09 [06:16:31] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+loading multi_modal_projector
+loading multi_modal_projector
+loading video_projector
+loading multi_modal_projector
+loading video_projector
+loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+loading video_projector
+loading multi_modal_projector
+loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]loading video_projector
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+loading multi_modal_projector
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]loading video_projector
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]loading language_model
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]08/09 [06:16:32] INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (pos_embed)                                      
+                 INFO     | >> Temporal interpolate from 4   internvideo2.py:291
+                          to 8 (clip_pos_embed)                                 
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:07,  1.18s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:07,  1.17s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:07,  1.26s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:06,  1.16s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:07,  1.31s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:06,  1.15s/it]loading multi_modal_projector
+loading video_projector
+loading language_model
+Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:07,  1.23s/it]You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.17s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.19s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.18s/it]Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.13s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:06,  1.24s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.14s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:05,  1.18s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.18s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.21s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.18s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.16s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.19s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.16s/it]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:08,  1.37s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.20s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.20s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.21s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.18s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.17s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.19s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.18s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:02<00:06,  1.29s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:04<00:03,  1.21s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:05<00:02,  1.19s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:06<00:02,  1.21s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:05<00:02,  1.17s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:05<00:02,  1.17s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:05<00:02,  1.18s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:05<00:02,  1.17s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:03<00:04,  1.24s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:06<00:02,  1.21s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.20s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.21s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.18s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.18s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.20s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.18s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:05<00:03,  1.23s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.03s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.12s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.03s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.13s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.02s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.11s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.00it/s]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.11s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.03s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.11s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.21s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.01s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.10s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards:  71%|███████▏  | 5/7 [00:06<00:02,  1.20s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.03s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.13s/it]
+Frozen ViT
+Frozen video_encoder
+Loading checkpoint shards:  86%|████████▌ | 6/7 [00:07<00:01,  1.17s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.01it/s]Loading checkpoint shards: 100%|██████████| 7/7 [00:07<00:00,  1.13s/it]
+Frozen ViT
+Frozen video_encoder
+LORA llm
+LORA llm
+LORA llm
+LORA llm
+LORA llm
+LORA llm
+LORA llm
+LORA llm
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+Frozen Part LLM
+{'Total': 9767440301, 'Trainable': 1432344109}
+08/09 [06:18:17] INFO     | >> [*] Creating Dataset                 train.py:116
+08/09 [06:18:29] INFO     | >> [*] Initializing Train Strategy      train.py:162
+08/09 [06:18:44] INFO     | >> [*] FSDP Full-Shard Strategy =>>      fsdp.py:261
+                          Finalized Training Setup:                             
+                                   |-> Global (Effective) Batch Size            
+                          = 144                                                 
+                                   |-> Per-Device Batch Size = 6                
+                                   |-> Distributed World Size = 8               
+                                   |-> Gradient Accumulation Steps =            
+                          3                                                     
+                                                                                
+                                   |-> LLM Backbone FSDP Gradient               
+                          Checkpointing = True                                  
+                                   |-> Use FSDP Mixed Precision =               
+                          True                                                  
+                                           |-> Parameter Precision =            
+                          torch.bfloat16                                        
+                                           |-> Reduction Precision =            
+                          torch.bfloat16                                        
+                                           |-> Buffer Precision =               
+                          torch.bfloat16                                        
+                                                                                
+                                   |-> Default AdamW LR = 2e-05                 
+                                   |-> AdamW Weight Decay = 0.0                 
+                                   |-> LR Scheduler Type =                      
+                          linear-warmup+cosine-decay                            
+                                   |-> LR Scheduler Warmup Steps                
+                          (Ratio) = 258 (0.03)                                  
+                                   |-> Dataset Size = 1242000                   
+                          Examples                                              
+                                   |-> Max Steps = 8625                         
+                                                                                
+                 INFO     | >> [*] Starting Training Loop           train.py:186
+  0%|          | 0/8624 [00:00<?, ?it/s][h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xa990a840] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0xab44edc0] mmco: unref short failure
+[h264 @ 0x11d4b8fc0] mmco: unref short failure
+[h264 @ 0x11d4b8fc0] mmco: unref short failure
+[h264 @ 0x11d4b8fc0] mmco: unref short failure
+[h264 @ 0x11d4b8fc0] mmco: unref short failure
+[h264 @ 0x11adbcc80] mmco: unref short failure
+[h264 @ 0xd56410c0] mmco: unref short failure
+[h264 @ 0x11d4b8fc0] mmco: unref short failure
+[h264 @ 0xd56410c0] mmco: unref short failure
+[h264 @ 0xab451340] mmco: unref short failure
+[h264 @ 0xab451340] mmco: unref short failure
+[h264 @ 0xd71b0c00] mmco: unref short failure
+[h264 @ 0x106f9f6c0] mmco: unref short failure
+[h264 @ 0xe678ebc0] mmco: unref short failure
+[h264 @ 0x106f9f6c0] mmco: unref short failure
+[h264 @ 0x114490fc0] mmco: unref short failure
+[h264 @ 0x114490fc0] mmco: unref short failure
+[h264 @ 0xd095f4c0] mmco: unref short failure
+[h264 @ 0xd095f4c0] mmco: unref short failure
+[h264 @ 0xd095f4c0] mmco: unref short failure
+[h264 @ 0xab4822c0] mmco: unref short failure
+[h264 @ 0xab4822c0] mmco: unref short failure
+[h264 @ 0x116067d00] mmco: unref short failure
+[h264 @ 0x116067d00] mmco: unref short failure
+[h264 @ 0x6d6cf40] mmco: unref short failure
+[h264 @ 0x6d6cf40] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x6d6cf40] mmco: unref short failure
+[h264 @ 0x6d6cf40] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x114489b00] mmco: unref short failure
+[h264 @ 0x10a23d4c0] mmco: unref short failure
+[h264 @ 0x10a23d4c0] mmco: unref short failure
+[h264 @ 0x10a23d4c0] mmco: unref short failure
+[h264 @ 0x10a23d4c0] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0x118884e80] mmco: unref short failure
+[h264 @ 0x118884e80] mmco: unref short failure
+[h264 @ 0x118884e80] mmco: unref short failure
+[h264 @ 0x118884e80] mmco: unref short failure
+[h264 @ 0x118884e80] mmco: unref short failure
+[h264 @ 0xd68ec7c0] mmco: unref short failure
+[h264 @ 0xd588ad40] mmco: unref short failure
+[h264 @ 0xd588ad40] mmco: unref short failure
+  0%|          | 1/8624 [01:20<192:41:58, 80.45s/it][h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x8f427bc0] mmco: unref short failure
+[h264 @ 0x11605fd80] mmco: unref short failure
+[h264 @ 0x11605fd80] mmco: unref short failure
+[h264 @ 0xdfe7b380] mmco: unref short failure
+[h264 @ 0xdfe7b380] mmco: unref short failure
+[h264 @ 0xdfe7b380] mmco: unref short failure
+[h264 @ 0xdfe7b380] mmco: unref short failure
+[h264 @ 0xdfe7b380] mmco: unref short failure
+[h264 @ 0x106fa94c0] mmco: unref short failure
+[h264 @ 0x106fa94c0] mmco: unref short failure
+[h264 @ 0x106fa94c0] mmco: unref short failure
+[h264 @ 0x106fa94c0] mmco: unref short failure
+[h264 @ 0x106fa94c0] mmco: unref short failure
+  0%|          | 2/8624 [02:38<189:51:44, 79.27s/it][h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11ae52700] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0x11adc1540] mmco: unref short failure
+[h264 @ 0xdb4263c0] mmco: unref short failure
+[h264 @ 0xdb4263c0] mmco: unref short failure
+[h264 @ 0xdb4263c0] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0xdb4263c0] mmco: unref short failure
+[h264 @ 0xdb4263c0] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x106f9c100] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0x11b3ecf40] mmco: unref short failure
+[h264 @ 0xaacce940] mmco: unref short failure
+[h264 @ 0xaacce940] mmco: unref short failure
+[h264 @ 0xaacce940] mmco: unref short failure
+  0%|          | 3/8624 [03:42<172:13:19, 71.92s/it][h264 @ 0x808a3c0] mmco: unref short failure
+[h264 @ 0x808a3c0] mmco: unref short failure
+[h264 @ 0xaad3d080] mmco: unref short failure
+[h264 @ 0xaad3d080] mmco: unref short failure
+[h264 @ 0x116062880] mmco: unref short failure
+[h264 @ 0x116062880] mmco: unref short failure
+[h264 @ 0x1180ac400] mmco: unref short failure
+[h264 @ 0x1180ac400] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+[h264 @ 0xd095ab40] mmco: unref short failure
+  0%|          | 4/8624 [05:06<184:01:39, 76.86s/it][h264 @ 0xd09cd1c0] mmco: unref short failure
+[h264 @ 0xd09cd1c0] mmco: unref short failure
+[h264 @ 0x62d2f00] mmco: unref short failure
+[h264 @ 0x62d2f00] mmco: unref short failure
+[h264 @ 0x62d2f00] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0x62d2f00] mmco: unref short failure
+[h264 @ 0xdfed81c0] mmco: unref short failure
+[h264 @ 0xd57f17c0] mmco: unref short failure
+[h264 @ 0xd57f17c0] mmco: unref short failure
+[h264 @ 0xd57f17c0] mmco: unref short failure
+[h264 @ 0xd57f17c0] mmco: unref short failure
+  0%|          | 5/8624 [06:23<184:33:29, 77.09s/it][h264 @ 0xe5b9eec0] mmco: unref short failure
+[h264 @ 0xe5b9eec0] mmco: unref short failure
+[h264 @ 0xe5b9eec0] mmco: unref short failure
+[h264 @ 0x11608a940] mmco: unref short failure
+[h264 @ 0x11608a940] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0xebd72540] mmco: unref short failure
+[h264 @ 0x119d551c0] mmco: unref short failure
+[h264 @ 0x119d551c0] mmco: unref short failure
+[h264 @ 0x119d551c0] mmco: unref short failure
+[h264 @ 0x11ae2f300] mmco: unref short failure
+[h264 @ 0x11ae2f300] mmco: unref short failure
+[h264 @ 0x11ae2f300] mmco: unref short failure
+[h264 @ 0xd09d3a40] mmco: unref short failure
+[h264 @ 0x2b30e6c0] mmco: unref short failure
+[h264 @ 0x2b30e6c0] mmco: unref short failure
+[h264 @ 0x2b30e6c0] mmco: unref short failure
+  0%|          | 6/8624 [07:50<192:23:07, 80.37s/it][h264 @ 0x118097fc0] mmco: unref short failure
+[h264 @ 0x118097fc0] mmco: unref short failure
+[h264 @ 0x118097fc0] mmco: unref short failure
+[h264 @ 0x118097fc0] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x116062d80] mmco: unref short failure
+[h264 @ 0x11456b980] mmco: unref short failure
+[h264 @ 0x11456b980] mmco: unref short failure
+[h264 @ 0x11456b980] mmco: unref short failure
+[h264 @ 0x11456b980] mmco: unref short failure
+  0%|          | 7/8624 [08:59<183:38:41, 76.72s/it][h264 @ 0x11adbea00] mmco: unref short failure
+[h264 @ 0xab4ffc40] mmco: unref short failure
+[h264 @ 0xab4ffc40] mmco: unref short failure

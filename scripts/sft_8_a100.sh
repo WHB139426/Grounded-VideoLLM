@@ -14,6 +14,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nnodes 1 --nproc-pe
     --warmup_ratio 0.03 \
     --lr_scheduler_type linear-warmup+cosine-decay \
     --sharding_strategy full-shard \
-    --global_batch_size 128 \
-    --per_device_batch_size 4 \
+    --global_batch_size 144 \
+    --per_device_batch_size 6 \
     --pretrained_proj /data/hvw5451/weights/ckpt/grounded_llava_next_video_llama3_mix_grounded_multi_modal_projector_video_projecter_language_model.pth
