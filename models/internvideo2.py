@@ -21,15 +21,9 @@ from einops import rearrange
 
 logger = logging.getLogger(__name__)
 
-try:
-    from flash_attn.modules.mlp import FusedMLP
-except:
-    logger.warn(f'FusedMLP of flash_attn is not installed!!!')
+# from flash_attn.modules.mlp import FusedMLP
+# from flash_attn.ops.rms_norm import DropoutAddRMSNorm
 
-try:
-    from flash_attn.ops.rms_norm import DropoutAddRMSNorm
-except:
-    logger.warn(f'DropoutAddRMSNorm of flash_attn is not installed!!!')
 
 # --------------------------------------------------------
 # 3D sine-cosine position embedding
@@ -807,7 +801,7 @@ class PretrainInternVideo2(nn.Module):
 
         self.num_frames = num_frames
         self.tubelet_size = tubelet_size
-        assert use_flash_attn == use_fused_rmsnorm == use_fused_mlp, 'use_flash_attn, use_fused_rmsnorm and use_fused_mlp should be consistent'
+        # assert use_flash_attn == use_fused_rmsnorm == use_fused_mlp, 'use_flash_attn, use_fused_rmsnorm and use_fused_mlp should be consistent'
 
         self.use_flash_attn = use_flash_attn
         self.embed_dim = embed_dim
@@ -1101,7 +1095,7 @@ def pretrain_internvideo2_1b_patch14_224(num_frames):
         drop_path_rate=0.25,
         init_values=0.00001,
         qk_normalization=True,
-        use_flash_attn=False,
+        use_flash_attn=True,
         use_fused_rmsnorm=False,
         use_fused_mlp=False,
         fused_mlp_heuristic=1,

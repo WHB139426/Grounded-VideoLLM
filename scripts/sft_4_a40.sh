@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0,5,6,7 torchrun --standalone --nnodes 1 --nproc-per-node 4 train.py \
+CUDA_VISIBLE_DEVICES=4,5,6,7 torchrun --standalone --nnodes 1 --nproc-per-node 4 train.py \
     --model llava_next_video \
     --llm llama3 \
     --dataset mix_sft \
