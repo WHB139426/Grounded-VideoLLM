@@ -99,9 +99,9 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 
         print("loading language_model")
         if self.llm == 'llama3':
-            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llama3-llava-next-8b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False, attn_implementation="flash_attention_2")
         elif self.llm == 'vicuna':
-            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False)
+            self.language_model = LlamaForCausalLM.from_pretrained('/home/haibo/weights/llava-v1.6-vicuna-7b-seperated/language_model_seperated', torch_dtype=self.dtype, use_cache=False, attn_implementation="flash_attention_2")
 
         self.all_module_keys = ["vision_tower", "language_model", "video_encoder", "multi_modal_projector", "video_projecter"]
 
@@ -572,7 +572,7 @@ class LLAVA_NEXT_VIDEO(nn.Module):
 # num_frames=96
 # num_segs=12
 # stage='grounded'
-# llm = 'llama3'
+# llm = 'vicuna'
 
 # from datasets.mix_grounded import MixGrounded
 # from torch.utils.data import Dataset, DataLoader
