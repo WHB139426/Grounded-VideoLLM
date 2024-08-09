@@ -136,14 +136,14 @@ class MixSFT(Dataset):
         
         try:
             pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
-                video_path = video_path,
+                video_path = os.path.join(self.video_path, video_file),
                 num_frames = self.num_frames,
                 sample = self.sample,
             )
         except Exception:
             print(f"ERROR: {dataset_name}, {question_id}, {video_id}, {video_file}, {text_input}")
             pixel_values, frame_indices, fps, total_frame_num, duration = read_frames_decord(
-                video_path = '/data/hvw5451/data/msrvttqa/videos/video0.mp4',
+                video_path = '/data/hvw5451/data/msrvttqa/video0.mp4',
                 num_frames = self.num_frames,
                 sample = self.sample,
             )
