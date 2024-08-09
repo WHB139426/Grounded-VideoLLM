@@ -13,7 +13,7 @@ from mm_utils.utils import *
 # nohup bash scripts/pretrain_8_a100.sh > pretrain_8_a100.out 2>&1 &  3269779
 # nohup bash scripts/grounded_8_a100.sh > grounded_8_a100.out 2>&1 &  1173215
 # nohup bash scripts/test.sh > grounded_2_a100.out 2>&1 &  1173215
-# nohup bash scripts/sft_8_a100.sh > sft_8_a100.out 2>&1 &  75999
+# nohup bash scripts/sft_8_a100.sh > sft_8_a100.out 2>&1 &  605167
 
 def parse_args():
     parser = argparse.ArgumentParser()
